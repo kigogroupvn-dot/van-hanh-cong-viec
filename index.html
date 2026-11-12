@@ -376,7 +376,7 @@ const late=t=>t.st!=="done"&&dd(t.due)&&dd(t.due)<TODAY;
 
 const mine=k=>TASKS.filter(t=>t.who.includes(k));
 /* ===== TIẾN ĐỘ TUẦN ===== */
-let DEMO=true, SOURCE_NOTE="Đang dùng dữ liệu demo";
+let ALL_TASKS=null; let DEMO=true, SOURCE_NOTE="Đang dùng dữ liệu demo";
 const monday=d=>{const x=new Date(d);x.setHours(0,0,0,0);x.setDate(x.getDate()-((x.getDay()+6)%7));return x};
 const fmtD=d=>String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0");
 const wkKey=d=>fmtD(d)+"/"+d.getFullYear();
@@ -492,7 +492,7 @@ function vPlan(id){
 let rWk=null;
 function vReport(){
   const wks=[...new Set(WEEKS.map(w=>w.wk))].sort((a,b)=>dd(a)-dd(b)); const wk=rWk&&wks.includes(rWk)?rWk:(wks.includes(CUR_WK)?CUR_WK:wks[wks.length-1]||CUR_WK);
-  const rows=wkRows(wk), lateL=TASKS.filter(late), notes=[...TASKS.filter(t=>t.n).map(t=>({n:t.n,t:t.t,who:t.who})),...rows.filter(w=>w.n).map(w=>({n:w.n,t:w.ch,who:[w.who]}))], done=TASKS.filter(t=>t.st==="done");
+  const rows=wkRows(wk), lateL=TASKS.filter(late), notes=[...TASKS.filter(t=>t.n).map(t=>({n:t.n,t:t.t,who:t.who})),...rows.filter(w=>w.n).map(w=>({n:w.n,t:w.ch,who:[w.who]}))], done=(ALL_TASKS||TASKS).filter(t=>t.st==="done"&&(!t.doneAt||(t.doneAt>=dd(wk)&&t.doneAt-dd(wk)<7*864e5)));
   const byCh={};rows.forEach(w=>{const c=byCh[w.ch]=byCh[w.ch]||{d:0,t:0,links:[]};c.d+=w.done||0;c.t+=w.target;c.links.push(...w.links)});
   const sa=rows.reduce((x,w)=>x+(w.done||0),0), sb=rows.reduce((x,w)=>x+w.target,0), m0=dd(wk), end=new Date(m0);end.setDate(end.getDate()+6);
   const links=rows.flatMap(w=>w.links.map(l=>({l,ch:w.ch,who:w.who})));
@@ -608,7 +608,7 @@ async function loadAll(){
       plans.push(p); const src=col(r,"Nguồn dữ liệu");
       const tm=/^tab:\s*(.+)$/i.exec(src), ext=sheetId(src);
       const readTasks=async(fid,name)=>(await tab(fid,name,["Việc","Phụ trách"])).forEach(t=>{const st=ST_MAP[col(t,"Tình trạng").toLowerCase()]||"run";const tg=+col(t,"Chỉ tiêu (số)")||0,dn=col(t,"Đã làm");
-        tasks.push({p:p.id,ch:col(t,"Kênh"),t:col(t,"Việc"),s:col(t,"Mô tả thêm"),who:who(col(t,"Phụ trách")),st,due:col(t,"Hạn"),goal:dn!==""&&tg?dn+"/"+tg:col(t,"Chỉ tiêu"),n:col(t,"Ghi chú"),links:links(col(t,"Link bài"))})});
+        tasks.push({doneAt:dd(col(t,"Ngày hoàn thành")||col(t,"Ngày cập nhật")),p:p.id,ch:col(t,"Kênh"),t:col(t,"Việc"),s:col(t,"Mô tả thêm"),who:who(col(t,"Phụ trách")),st,due:col(t,"Hạn"),goal:dn!==""&&tg?dn+"/"+tg:col(t,"Chỉ tiêu"),n:col(t,"Ghi chú"),links:links(col(t,"Link bài"))})});
       try{ if(tm) await readTasks(id,tm[1].trim()); else if(ext) await readTasks(ext,"Việc"); }catch(e){}
       if(ext){ try{ const posts=await tab(ext,"Bài đăng",["Ngày","Link bài đã đăng"]); const k=who(col(r,"Người đăng bài")||p.owner)[0]; const g={};
         posts.forEach(x=>{const d=dd(col(x,"Ngày"));if(!d)return;const wk=wkKey(monday(d));const o=g[wk]=g[wk]||{wk,id:p.id,ch:"Fanpage "+(p.brand||p.name),who:k,target:0,done:0,links:[],src:"Sheet "+(p.brand||p.name)};o.target++;o.dates=(o.dates||[]);o.dates.push(fmtD(d));o.dueNow=(o.dueNow||0)+(d<=TODAY?1:0);const L=links(col(x,"Link bài đã đăng"));if(L.length||/đã đăng/i.test(col(x,"Tình trạng")))o.done++;o.links.push(...L)});
@@ -617,7 +617,7 @@ async function loadAll(){
           tasks.push({p:p.id,ch:"Fanpage "+(p.brand||p.name),t:"Đăng bài theo lịch content ("+posts.length+" bài)",s:c?("Tuần này "+c.done+"/"+c.target+" bài"):(nx?"Tuần này không có bài theo lịch":"Đã hết lịch đăng"),who:[k],st:"run",links:[]});} }catch(e){} }
     }
     try{ (await tab(id,"Tiến độ tuần",["Tuần","Đã đăng"])).forEach(w=>{const d=dd(col(w,"Tuần"));if(!d)return;weeks.push({wk:wkKey(monday(d)),id:col(w,"Mã việc"),ch:col(w,"Kênh"),who:who(col(w,"Phụ trách"))[0],target:+col(w,"Chỉ tiêu")||0,done:col(w,"Đã đăng")===""?0:+col(w,"Đã đăng")||0,links:links(col(w,"Link bài")),n:/^VÍ DỤ/i.test(col(w,"Ghi chú"))?"":col(w,"Ghi chú")})}) }catch(e){}
-    PEOPLE=people; PLANS=plans; TASKS=tasks; WEEKS=weeks; DEMO=false;
+    PEOPLE=people; PLANS=plans; ALL_TASKS=tasks; TASKS=tasks.filter(t=>!(t.st==="done"&&(!t.doneAt||TODAY-t.doneAt>7*864e5))); WEEKS=weeks; DEMO=false;
     const now=new Date(); SOURCE_NOTE="Dữ liệu cập nhật lúc "+String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0")+" "+fmtD(now)+"/"+now.getFullYear();
     const u=document.getElementById("upd"); if(u)u.textContent=SOURCE_NOTE;
     route();
