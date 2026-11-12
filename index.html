@@ -586,7 +586,9 @@ async function loadAll(){
       try{ if(tm) await readTasks(id,tm[1].trim()); else if(ext) await readTasks(ext,"Việc"); }catch(e){}
       if(ext){ try{ const posts=await tab(ext,"Bài đăng",["Ngày","Link bài đã đăng"]); const k=who(col(r,"Người đăng bài")||p.owner)[0]; const g={};
         posts.forEach(x=>{const d=dd(col(x,"Ngày"));if(!d)return;const wk=wkKey(monday(d));const o=g[wk]=g[wk]||{wk,id:p.id,ch:"Fanpage "+(p.brand||p.name),who:k,target:0,done:0,links:[],src:"Sheet "+(p.brand||p.name)};o.target++;const L=links(col(x,"Link bài đã đăng"));if(L.length||/đã đăng/i.test(col(x,"Tình trạng")))o.done++;o.links.push(...L)});
-        weeks.push(...Object.values(g)); p.count=posts.length; }catch(e){} }
+        weeks.push(...Object.values(g)); p.count=posts.length;
+        if(k&&!tasks.some(t=>t.p===p.id)){const c=g[CUR_WK],nx=Object.values(g).filter(w=>dd(w.wk)>=monday(TODAY)).length;
+          tasks.push({p:p.id,ch:"Fanpage "+(p.brand||p.name),t:"Đăng bài theo lịch content ("+posts.length+" bài)",s:c?("Tuần này "+c.done+"/"+c.target+" bài"):(nx?"Tuần này không có bài theo lịch":"Đã hết lịch đăng"),who:[k],st:"run",links:[]});} }catch(e){} }
     }
     try{ (await tab(id,"Tiến độ tuần",["Tuần","Đã đăng"])).forEach(w=>{const d=dd(col(w,"Tuần"));if(!d)return;weeks.push({wk:wkKey(monday(d)),id:col(w,"Mã việc"),ch:col(w,"Kênh"),who:who(col(w,"Phụ trách"))[0],target:+col(w,"Chỉ tiêu")||0,done:col(w,"Đã đăng")===""?0:+col(w,"Đã đăng")||0,links:links(col(w,"Link bài")),n:/^VÍ DỤ/i.test(col(w,"Ghi chú"))?"":col(w,"Ghi chú")})}) }catch(e){}
     PEOPLE=people; PLANS=plans; TASKS=tasks; WEEKS=weeks; DEMO=false;
