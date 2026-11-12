@@ -584,7 +584,7 @@ async function loadAll(){
       const readTasks=async(fid,name)=>(await tab(fid,name,["Việc","Phụ trách"])).forEach(t=>{const st=ST_MAP[col(t,"Tình trạng").toLowerCase()]||"run";const tg=+col(t,"Chỉ tiêu (số)")||0,dn=col(t,"Đã làm");
         tasks.push({p:p.id,ch:col(t,"Kênh"),t:col(t,"Việc"),s:col(t,"Mô tả thêm"),who:who(col(t,"Phụ trách")),st,due:col(t,"Hạn"),goal:dn!==""&&tg?dn+"/"+tg:col(t,"Chỉ tiêu"),n:col(t,"Ghi chú"),links:links(col(t,"Link bài"))})});
       try{ if(tm) await readTasks(id,tm[1].trim()); else if(ext) await readTasks(ext,"Việc"); }catch(e){}
-      if(ext){ try{ const posts=await tab(ext,"Bài đăng",["Ngày","Link bài đã đăng"]); const k=who(p.owner)[0]; const g={};
+      if(ext){ try{ const posts=await tab(ext,"Bài đăng",["Ngày","Link bài đã đăng"]); const k=who(col(r,"Người đăng bài")||p.owner)[0]; const g={};
         posts.forEach(x=>{const d=dd(col(x,"Ngày"));if(!d)return;const wk=wkKey(monday(d));const o=g[wk]=g[wk]||{wk,id:p.id,ch:"Fanpage "+(p.brand||p.name),who:k,target:0,done:0,links:[],src:"Sheet "+(p.brand||p.name)};o.target++;const L=links(col(x,"Link bài đã đăng"));if(L.length||/đã đăng/i.test(col(x,"Tình trạng")))o.done++;o.links.push(...L)});
         weeks.push(...Object.values(g)); p.count=posts.length; }catch(e){} }
     }
