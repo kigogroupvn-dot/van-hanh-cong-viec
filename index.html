@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Vận hành công việc Kigo</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Philosopher:wght@400;700&family=Mona+Sans:wght@400;500;600;700&display=swap">
+<style>
+@font-face{font-family:"SVN Gilroy";src:url("fonts/gilroy-bold.otf") format("opentype");font-weight:700;font-display:swap}
+@font-face{font-family:"SVN Gilroy";src:url("fonts/gilroy-black.otf") format("opentype");font-weight:900;font-display:swap}
+@font-face{font-family:"Photograph Signature";src:url("fonts/photograph-signature.otf") format("opentype");font-display:swap}
+/* Layout: internal portal. Sticky top bar (logo, nav, search) → routed views: Home (hero like the plan site, plans, due soon, people), Person page, Search. Kigo identity: white, hairlines, crimson block for figures and states. Always light. */
+:root{--crimson:#AC2436;--velvet:#8E0F0B;--misty:#FDE3DD;--flamingo:#F9BAB7;--white:#FFFFFF;--text:#353535;--muted:#76696B;--grey:#C9C9C9;--rule:#EAD7D2;--paper:#FBF7F6;
+--f-title:"Philosopher",Georgia,serif;--f-head:"SVN Gilroy","Mona Sans",system-ui,sans-serif;--f-body:"Mona Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--f-script:"Photograph Signature","Brush Script MT",cursive;color-scheme:light}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{overflow-x:clip;margin:0;background:var(--white);color:var(--text);font-family:var(--f-body);font-size:15.5px;line-height:1.6;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:20;background:var(--white)}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+@media(min-width:900px){.wrap{padding-left:max(40px,env(safe-area-inset-left,0px));padding-right:max(40px,env(safe-area-inset-right,0px))}}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--flamingo);outline-offset:2px}
+.kicker{font-family:var(--f-head);font-weight:700;font-size:12.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--crimson)}
+h1,h2,h3{font-family:var(--f-title);font-weight:700;color:var(--velvet);margin:0;text-wrap:balance;line-height:1.1}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.top .wrap{display:flex;align-items:center;gap:28px;height:68px}
+.top .logo{width:96px;color:var(--crimson);display:block;flex:none}
+.top nav{display:flex;gap:4px}
+.top nav a{white-space:nowrap;text-decoration:none;font-size:14.5px;font-weight:500;padding:8px 12px;border-radius:6px;color:var(--muted)}
+.top nav a:hover{color:var(--text);background:var(--paper)}
+.top nav a[aria-current="page"]{color:var(--velvet);background:var(--misty);font-weight:600}
+.search{margin-left:auto;position:relative;flex:0 1 280px;min-width:0}
+.search input{width:100%;font:inherit;font-size:14px;border:1px solid var(--rule);border-radius:8px;padding:9px 12px 9px 34px;background:var(--paper);color:var(--text)}
+.search input:focus{outline:none;border-color:var(--crimson);background:var(--white)}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--muted)}
+
+main{padding-block:48px 80px;min-height:70vh}
+.crumbs{font-size:13.5px;color:var(--muted);margin-bottom:18px}.crumbs a{text-decoration:none}.crumbs a:hover{color:var(--crimson)}
+.pagehead{display:grid;gap:10px;margin-bottom:40px;max-width:820px}
+.pagehead h1{font-size:clamp(34px,4.4vw,54px)}
+.pagehead p{margin:0;color:var(--muted);font-size:17px}
+.sample{justify-self:start;display:inline-flex;align-items:center;gap:8px;background:var(--paper);border:1px dashed var(--flamingo);color:var(--velvet);font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px}
+.blockhead{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin:56px 0 18px;border-bottom:1.5px solid var(--velvet);padding-bottom:12px}
+.blockhead h2{font-size:28px}
+.blockhead a{font-size:14px;font-weight:600;color:var(--crimson);text-decoration:none;white-space:nowrap}
+
+/* home hero (same language as the plan site) */
+main{position:relative}
+body.home main,body.sub main{padding-top:0}
+/* full-bleed band helper */
+.bleed{position:relative}
+.bleed::before{content:"";position:absolute;inset:0 calc(50% - 50vw);z-index:-1}
+/* E — home hero: full-bleed brand photo with crimson veil, nav floats over it */
+.heroE{color:var(--white);padding-block:150px 96px;min-height:620px;display:flex;align-items:center}
+.heroE::before{background:#f6b9bd url("hero-rose7.jpg") right center/cover no-repeat}
+.heroE::after{content:"";position:absolute;inset:0 calc(50% - 50vw);z-index:-1;background:linear-gradient(90deg,rgba(110,12,22,.94) 0%,rgba(142,15,11,.84) 30%,rgba(172,36,54,.3) 48%,rgba(172,36,54,0) 62%)}
+.heroE .inner{max-width:560px;position:relative;z-index:1}
+.heroE .hlogo{position:absolute;right:0;top:50%;transform:translateY(-44%);width:min(440px,34vw);color:#fff;z-index:0;pointer-events:none}
+@media(max-width:900px){.heroE .hlogo{display:none}}
+.heroE .kicker{color:var(--flamingo);letter-spacing:.32em}
+.heroE h1{color:var(--white);font-size:clamp(44px,5.2vw,74px);line-height:1.02;margin-top:22px;letter-spacing:-.01em}
+.heroE h1 em{display:block;font-style:italic;font-weight:400;color:var(--flamingo)}
+.heroE dl{display:grid;grid-template-columns:120px 1fr;gap:12px 24px;margin:36px 0 0;font-size:16.5px}
+.heroE dt{font-family:var(--f-head);font-weight:700;font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--flamingo);padding-top:5px}
+.heroE dd{margin:0;color:rgba(255,255,255,.92);line-height:1.55}
+body.home .top{position:absolute;left:0;right:0;background:transparent;border-bottom-color:rgba(255,255,255,.18);backdrop-filter:none}
+body.home .top .logo{color:var(--white)}
+body.home .top nav a{color:rgba(255,255,255,.78)}body.home .top nav a:hover{background:rgba(255,255,255,.1);color:var(--white)}
+body.home .top nav a[aria-current="page"]{background:none;color:var(--white);border-bottom:2px solid var(--flamingo);border-radius:0}
+body.home .search input{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.45);color:var(--white)}
+body.home .search input::placeholder{color:rgba(255,255,255,.75)}body.home .search svg{color:rgba(255,255,255,.8)}
+body.home::before{background:transparent}
+.bandE{padding-block:28px 8px;color:var(--text)}
+.bandE::before{background:var(--white)}
+.boxes{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.boxes div{border-left:1px solid var(--rule);padding:20px 24px;display:flex;align-items:baseline;gap:12px;min-width:0}.boxes div:first-child{border-left:none;padding-left:0}
+.boxes b{font-family:var(--f-title);font-weight:400;font-size:52px;line-height:1;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--crimson)}
+.boxes span{font-size:15px;color:var(--muted)}
+.bandE small{display:block;margin-top:14px;font-size:13px;color:var(--muted)}
+/* D — sub-page header band */
+.bandD{color:var(--white);padding-block:28px 0;margin-bottom:40px}
+.bandD::before{background:var(--crimson);bottom:56px}
+.bandD .ring{position:absolute;border:1.5px solid rgba(255,255,255,.16);border-radius:50%;pointer-events:none;z-index:-1}
+.bandD .crumbs{color:var(--misty)}.bandD .crumbs a:hover{color:var(--white)}
+.bandD .kicker{color:var(--flamingo)}
+.bandD .who{display:flex;gap:22px;align-items:center;margin-top:20px}
+.bandD .who .av{width:72px;height:90px;font-size:26px;background:var(--white)}
+.bandD h1{color:var(--white);font-size:clamp(40px,5vw,64px);margin-top:8px}
+.bandD p{margin:6px 0 0;color:var(--misty);font-size:16px}
+.dstats{display:grid;grid-template-columns:repeat(3,1fr);background:var(--white);color:var(--text);border-radius:20px 20px 0 0;padding:24px 32px 18px;margin-top:32px;box-shadow:0 -1px 0 var(--rule)}
+.dstats div{padding:4px 0 4px 24px;border-left:1px solid var(--rule)}.dstats div:first-child{border-left:none;padding-left:0}
+.dstats b{display:block;font-family:var(--f-head);font-weight:900;font-size:40px;line-height:1;color:var(--crimson);font-variant-numeric:tabular-nums}
+.dstats span{font-size:13.5px;color:var(--muted)}
+/* home */
+.home-hero{display:grid;grid-template-columns:1.2fr .8fr;gap:48px;align-items:end}
+.home-hero .stats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.home-hero .stats div{padding:18px 0 18px 20px;border-left:1px solid var(--rule)}.home-hero .stats div:first-child{border-left:none;padding-left:0}
+.home-hero .stats b{display:block;font-family:var(--f-head);font-weight:900;font-size:40px;line-height:1;color:var(--crimson);font-variant-numeric:tabular-nums}
+.home-hero .stats span{font-size:13.5px;color:var(--muted)}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.plan{border:1px solid var(--rule);border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:12px;text-decoration:none;min-width:0;transition:border-color .15s}
+a.plan:hover{border-color:var(--crimson)}
+.plan.lead{background:var(--crimson);border-color:var(--crimson);color:var(--white);border-radius:90px 14px 14px 14px;padding-top:40px}
+.plan.lead h3{color:var(--white)}.plan.lead .kicker{color:var(--flamingo)}.plan.lead p{color:var(--misty)}
+.plan h3{font-size:25px}
+.plan p{margin:0;font-size:14.5px;color:var(--muted)}
+.plan .meta{display:flex;gap:18px;margin-top:auto;padding-top:14px;border-top:1px solid var(--rule);font-size:13px;color:var(--muted)}
+.plan.lead .meta{border-top-color:rgba(255,255,255,.25);color:var(--misty)}
+.plan .meta b{display:block;font-family:var(--f-head);font-weight:900;font-size:22px;color:var(--crimson)}
+.plan.lead .meta b{color:var(--white)}
+.plan.draft{border-style:dashed}
+.plan.add{border-style:dashed;align-items:flex-start;justify-content:center;color:var(--muted);background:var(--paper)}
+.plan.add b{font-family:var(--f-title);font-size:22px;color:var(--velvet)}
+.two{display:grid;grid-template-columns:1.3fr 1fr;gap:48px}
+.due{list-style:none;margin:0;padding:0}
+.due li{display:grid;grid-template-columns:76px 1fr auto;gap:18px;align-items:center;padding:16px 0;border-bottom:1px solid var(--rule)}
+.due .d{font-family:var(--f-head);font-weight:900;font-size:24px;color:var(--crimson);line-height:1;font-variant-numeric:tabular-nums}
+.due .d small{display:block;font-size:11px;letter-spacing:.12em;color:var(--muted);margin-top:4px;font-weight:700}
+.due b{display:block;font-weight:600}.due span{font-size:13.5px;color:var(--muted)}
+.people{display:grid;gap:0}
+.person{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:14px 0;border-bottom:1px solid var(--rule);text-decoration:none}
+.person:hover b{color:var(--crimson)}
+.av{display:inline-grid;place-items:center;width:34px;height:42px;border-radius:50%;background:var(--misty);color:var(--crimson);font-family:var(--f-head);font-weight:900;font-size:13px;flex:none}
+.person b{display:block;font-family:var(--f-title);font-size:20px;color:var(--velvet)}
+.person small{color:var(--muted);font-size:13px}
+.person .n{text-align:right;font-size:13px;color:var(--muted)}.person .n strong{display:block;font-family:var(--f-head);font-weight:900;font-size:22px;color:var(--crimson)}
+
+/* plans */
+.plan{position:relative}
+.plan .smp{position:absolute;top:14px;right:14px;font-size:11px;font-weight:600;color:var(--muted);border:1px dashed var(--flamingo);border-radius:999px;padding:2px 8px;background:var(--white)}
+.plan.nm{border-top:3px solid #C2652A}
+.plans{grid-template-columns:repeat(3,1fr)}
+.d.att0{color:var(--crimson)}.d.att1{color:var(--velvet)}.d.att2{color:var(--crimson)}
+.tasks small.warn{color:var(--crimson);font-weight:600}
+.tasks td a{color:var(--velvet);font-weight:600;text-decoration:none}
+.planbtns{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.pbtn{font-family:var(--f-head);font-weight:700;font-size:13px;letter-spacing:.04em;padding:9px 16px;border:1px solid rgba(255,255,255,.75);color:var(--white);text-decoration:none;border-radius:6px}
+.pbtn:hover{background:rgba(255,255,255,.12)}
+.pbtn.ghost{opacity:.75}
+/* workload + report */
+.load{margin:8px 0 8px;display:grid;gap:12px}
+.lrow{display:grid;grid-template-columns:180px 1fr 90px;gap:16px;align-items:center}
+.lrow b{font-family:var(--f-title);font-size:18px;color:var(--velvet)}
+.lrow small{display:block;font-size:12.5px;color:var(--muted)}
+.ltrack{height:18px;background:repeating-linear-gradient(90deg,var(--rule) 0 1px,transparent 1px 10%);position:relative}
+.ltrack i{position:absolute;left:0;top:0;bottom:0;background:var(--crimson)}
+.ltrack i.r{background:var(--flamingo)}
+.lrow .v{font-family:var(--f-head);font-weight:900;font-size:20px;color:var(--crimson);text-align:right;white-space:nowrap}
+.rgrid{display:grid;grid-template-columns:1.2fr 1fr;gap:48px;margin-top:8px}
+.kpirow{display:grid;grid-template-columns:110px 1fr 70px;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--rule);font-size:14.5px}
+.kpirow .bar{height:10px;background:var(--misty);position:relative}.kpirow .bar i{position:absolute;inset:0 auto 0 0;background:var(--crimson)}
+.kpirow .v{font-family:var(--f-head);font-weight:700;text-align:right;white-space:nowrap}
+.rlist{list-style:none;margin:0;padding:0}.rlist li{padding:12px 0;border-bottom:1px solid var(--rule);font-size:14.5px}
+.rlist li b{display:block;font-weight:600}.rlist li span{font-size:13px;color:var(--muted)}
+.smpnote{display:inline-block;font-size:12.5px;font-weight:600;color:var(--velvet);border:1px dashed var(--flamingo);border-radius:999px;padding:4px 12px;margin-top:6px}
+@media(max-width:900px){.lrow{grid-template-columns:110px 1fr 60px}.rgrid{grid-template-columns:1fr}}
+/* sales */
+.gate{max-width:440px;margin:24px auto 40px;border:1px solid var(--rule);border-radius:16px;padding:32px;display:grid;gap:14px;text-align:center}
+.gate h3{font-family:var(--f-title);font-size:24px;color:var(--velvet);margin:0}
+.gate p{margin:0;color:var(--muted);font-size:14.5px}
+.gate input{font:inherit;font-size:16px;padding:12px 14px;border:1px solid var(--rule);border-radius:10px;text-align:center}
+.gate input:focus{outline:none;border-color:var(--crimson)}
+.gate button,.sbtn{font-family:var(--f-head);font-weight:700;font-size:14px;letter-spacing:.04em;background:var(--crimson);color:#fff;border:none;border-radius:10px;padding:12px 18px;cursor:pointer}
+.gate .err{color:var(--crimson);font-weight:600;min-height:1.2em}
+.prods{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.prod{border:1px solid var(--rule);border-radius:16px;padding:22px 24px;display:grid;gap:14px}
+.prod h3{font-family:var(--f-title);font-size:24px;color:var(--velvet);margin:0}
+.prod .row3{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--rule)}
+.prod .row3 div{padding:12px 0 0 14px;border-left:1px solid var(--rule)}.prod .row3 div:first-child{border-left:none;padding-left:0}
+.prod .row3 b{display:block;font-family:var(--f-head);font-weight:900;font-size:22px;color:var(--crimson);white-space:nowrap}
+.prod .row3 span{font-size:12.5px;color:var(--muted)}
+.prod .empty{color:var(--muted);font-size:14px}
+.ratio.bad{color:var(--crimson)!important}.ratio.ok{color:var(--velvet)!important}
+.chart{border:1px solid var(--rule);border-radius:16px;padding:22px 24px;margin-top:18px}
+.chart .lg{display:flex;gap:18px;font-size:13px;color:var(--muted);margin-bottom:10px}
+.chart .lg i{display:inline-block;width:11px;height:11px;margin-right:6px;vertical-align:-1px}
+.cbars{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:6px;align-items:end;height:220px;border-bottom:1px solid var(--velvet);padding-top:10px}
+.cday{display:flex;gap:2px;align-items:end;height:100%;justify-content:center;position:relative}
+.cday i{display:block;width:42%;max-width:14px;border-radius:2px 2px 0 0}
+.cday i.c{background:var(--flamingo)}.cday i.r{background:var(--crimson)}
+.cdates{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:6px;font-size:10.5px;color:var(--muted);text-align:center;margin-top:6px;font-variant-numeric:tabular-nums}
+.stable td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.stable th.num{text-align:right}
+.snote{font-size:13px;color:var(--muted);margin:14px 0 0}
+@media(max-width:900px){.prods{grid-template-columns:1fr}.cdates span:nth-child(even){visibility:hidden}}
+.dstats.sk b{font-size:30px;white-space:nowrap}
+@media(max-width:900px){.dstats.sk{grid-template-columns:1fr}.dstats.sk div{border-left:none!important;padding:10px 0!important;border-top:1px solid var(--rule)}.dstats.sk div:first-child{border-top:none}.dstats.sk b{font-size:24px}}
+.stable .n,.dtable .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tasks th.n{text-align:right}
+td.z{color:#bbb}.bad{color:var(--crimson)!important;font-weight:700}.good{color:#1d7a46!important;font-weight:700}
+tr.tot td{font-weight:700;background:var(--misty);border-top:1.5px solid var(--velvet)}
+.dwrap{overflow-x:auto}
+.dtable{width:100%;min-width:980px;border-collapse:collapse;font-size:14px}
+.dtable th{font-family:var(--f-head);font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:10px 10px;border-bottom:1.5px solid var(--velvet);text-align:left}
+.dtable td{padding:10px;border-bottom:1px solid var(--rule)}
+.dtable .gs{border-left:14px solid #fff;box-shadow:inset 1px 0 0 var(--rule)}
+.dtable tr.gh th{border-bottom:none;padding:0 0 8px}
+.dtable tr.gh th span{display:block;background:var(--crimson);color:#fff;font-size:12.5px;letter-spacing:.18em;text-align:center;padding:8px;border-radius:8px 8px 0 0}
+.dtable tr.gh th.gt span{background:var(--velvet)}
+.dtable col.gtot{background:var(--paper)}
+.dtable td.ch{font-family:var(--f-title);font-weight:700;color:var(--velvet)}
+/* edit mode */
+body.editing [data-ed]{outline:1.5px dashed var(--flamingo);outline-offset:2px;cursor:text;border-radius:2px}
+body.editing [data-ed]:hover{outline-color:var(--crimson)}
+body.editing [data-ed]:focus{outline:2px solid var(--crimson);background:rgba(253,227,221,.55)}
+body.editing [data-ed].changed{outline:2px solid #1d7a46}
+.edbar{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:40;display:grid;gap:10px;justify-items:end;width:min(380px,calc(100vw - 32px))}
+.edpanel{background:#fff;border:1px solid var(--rule);border-radius:12px;box-shadow:0 12px 40px rgba(80,20,20,.18);padding:16px;display:grid;gap:10px;width:100%}
+.edpanel b{font-family:var(--f-head);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--crimson)}
+.edpanel p{margin:0;font-size:13px;color:var(--muted);line-height:1.5}
+.edpanel textarea{font:inherit;font-size:14px;min-height:88px;resize:vertical;border:1px solid var(--rule);border-radius:8px;padding:8px 10px}
+.edrow{display:flex;gap:10px;align-items:center;justify-content:space-between}.edrow span{font-size:12.5px;color:var(--muted)}
+.edbtn{font-family:var(--f-head);font-weight:700;font-size:13px;border:none;border-radius:8px;padding:11px 18px;cursor:pointer;background:var(--crimson);color:#fff;box-shadow:0 6px 20px rgba(172,36,54,.3)}
+.edbtn:disabled{background:var(--grey);box-shadow:none;cursor:default}.edbtn.alt{background:var(--velvet)}
+/* weekly */
+.wbar{display:block;height:8px;background:var(--misty);border-radius:99px;overflow:hidden;min-width:120px}.wbar i{display:block;height:100%;background:var(--crimson)}
+.wtable td small{display:block}.lk{color:var(--crimson);font-weight:600;text-decoration:none;margin-right:8px;word-break:break-all}.lk:hover{text-decoration:underline}
+.wklab{font-size:13px;color:var(--muted)}td.n.bad{color:var(--crimson)}.z{color:#aaa}
+/* assignment by person */
+.pgroup{margin-top:44px}
+.pgroup:first-of-type{margin-top:8px}
+.pghead{display:flex;flex-wrap:wrap;align-items:center;gap:14px 20px;padding-bottom:14px;border-bottom:1.5px solid var(--velvet);text-decoration:none}
+.pghead .av{width:44px;height:54px;font-size:15px}
+.pghead b{display:block;font-family:var(--f-title);font-size:28px;color:var(--velvet);line-height:1.1}
+.pghead small{color:var(--muted);font-size:13.5px}
+.pghead .nums{margin-left:auto;display:flex;gap:24px;font-size:13px;color:var(--muted)}
+.pghead .nums strong{font-family:var(--f-head);font-weight:900;font-size:22px;color:var(--crimson);margin-right:6px}
+.pghead:hover b{color:var(--crimson)}
+.pgroup .tasks th{border-bottom:1px solid var(--rule);padding-top:12px}
+/* board */
+.boardwrap{overflow-x:auto;padding-bottom:8px}
+.board{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}@media(max-width:1100px){.board{grid-template-columns:repeat(5,230px)}}
+.col{background:var(--paper);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.colhead{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:center;padding:6px 4px 12px;border-bottom:1px solid var(--rule);text-decoration:none}
+.colhead b{font-family:var(--f-title);font-size:21px;color:var(--velvet);line-height:1.1}
+.colhead small{grid-column:2;font-size:12.5px;color:var(--muted);margin-top:-2px}
+.colhead .av{grid-row:1/span 2}
+.colhead:hover b{color:var(--crimson)}
+.colstats{display:flex;gap:16px;font-size:12.5px;color:var(--muted);padding:0 4px}
+.colstats strong{font-family:var(--f-head);font-weight:900;font-size:18px;color:var(--crimson);margin-right:4px}
+.tcard{background:var(--white);border:1px solid var(--rule);border-radius:12px;padding:12px 14px;display:grid;gap:6px}
+.tcard h4{margin:0;font-family:var(--f-title);font-size:16.5px;color:var(--velvet);line-height:1.2}
+.tcard p{margin:0;font-size:13.5px;line-height:1.45}
+.tcard .ft{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.tcard.due{border-left:3px solid var(--crimson)}
+/* status */
+.st{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--velvet);white-space:nowrap}
+.st::before{content:"";width:10px;height:10px;border-radius:50%;box-sizing:border-box;flex:none}
+.st.due::before{background:var(--crimson)}
+.st.run::before{border:2px solid var(--crimson);background:linear-gradient(90deg,var(--crimson) 50%,transparent 50%)}
+.st.hold{color:var(--muted)}.st.hold::before{border:2px solid var(--grey)}
+.st.done::before{background:var(--velvet)}
+
+/* person page */
+.phead{display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center;margin-bottom:36px}
+.phead .av{width:72px;height:90px;font-size:26px}
+.phead h1{font-size:clamp(36px,4.4vw,52px)}
+.phead p{margin:6px 0 0;color:var(--muted)}
+.pstats{display:flex;gap:0;background:var(--crimson);color:var(--white);border-radius:60px 14px 14px 14px;padding:10px 10px 10px 26px}
+.pstats div{padding:14px 22px;border-left:1px solid rgba(255,255,255,.25)}.pstats div:first-child{border-left:none}
+.pstats b{display:block;font-family:var(--f-head);font-weight:900;font-size:34px;color:var(--white);line-height:1}
+.pstats span{font-size:12.5px;color:var(--misty)}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.chip{font:inherit;font-size:13.5px;font-weight:600;border:1px solid var(--rule);background:var(--white);color:var(--text);border-radius:999px;padding:6px 14px;cursor:pointer}
+.chip:hover{border-color:var(--flamingo)}
+.chip[aria-pressed="true"]{background:var(--velvet);border-color:var(--velvet);color:var(--white)}
+.tasks{width:100%;border-collapse:collapse;font-size:15px}
+.tasks th{font-family:var(--f-head);font-weight:700;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:left;padding:14px 16px 12px 0;border-bottom:1.5px solid var(--velvet)}
+.tasks td{padding:16px 16px 16px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+.tasks td.ch{font-family:var(--f-title);font-weight:700;font-size:18px;color:var(--velvet);white-space:nowrap}
+.tasks td small{display:block;color:var(--muted);font-size:13.5px}
+.tasks td.plan-c{font-size:13px;color:var(--muted);white-space:nowrap}
+.tasks td.fig{font-family:var(--f-head);font-weight:700;white-space:nowrap}
+.empty{padding:28px 0;color:var(--muted)}
+
+/* search */
+.results .r{display:grid;grid-template-columns:1fr auto;gap:6px 20px;padding:18px 0;border-bottom:1px solid var(--rule)}
+.results .r b{font-family:var(--f-title);font-size:20px;color:var(--velvet)}
+.results .r p{margin:0;grid-column:1;color:var(--text)}
+.results .r small{grid-column:1;color:var(--muted);font-size:13px}
+.results .r .st{grid-row:1;grid-column:2}
+mark{background:var(--misty);color:inherit;padding:0 2px;border-radius:2px}
+
+footer .wrap{border-top:1px solid var(--rule);padding-block:28px 40px;font-size:13px;color:var(--muted);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+@media(max-width:900px){
+  .bandD .ring{display:none}.dstats{padding:18px 18px 14px}.dstats b{font-size:30px}.dstats div{padding-left:14px}
+  .heroE{padding-block:170px 44px;min-height:0}.heroE::before{background-position:70% center}.heroE::after{background:linear-gradient(180deg,rgba(84,10,18,.45),rgba(142,15,11,.93) 52%)}.heroE dl{grid-template-columns:92px 1fr;font-size:15px}
+  .boxes{grid-template-columns:1fr 1fr}.boxes div{padding:14px 12px;flex-wrap:wrap;gap:4px 10px;border-top:1px solid var(--rule)}.boxes div:nth-child(odd){border-left:none;padding-left:0}.boxes b{font-size:36px}
+  .top .wrap{height:auto;flex-wrap:wrap;padding-block:10px;gap:10px 16px}
+  .top nav{order:3;width:100%;overflow-x:auto}
+  .search{flex:1 1 160px}
+  main{padding-block:32px 56px}
+  .home-hero,.two{grid-template-columns:1fr;gap:28px}
+  .plans{grid-template-columns:1fr}
+  .phead{grid-template-columns:auto 1fr}.pstats{grid-column:1/-1}
+  .tasks thead{display:none}.tasks,.tasks tbody,.tasks tr,.tasks td{display:block}
+  .tasks tr{padding:12px 0;border-bottom:1px solid var(--rule)}.tasks td{border:none;padding:3px 0}
+}
+</style>
+
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="logo" viewBox="60 54 506 214"><path fill="currentColor" d="M 347.8125 149.964844 L 322.941406 121.890625 C 319.371094 117.859375 313.0625 117.902344 309.542969 121.980469 L 296.761719 136.789062 C 293.664062 140.382812 290.359375 143.789062 286.871094 147.003906 L 295.527344 147.003906 C 295.839844 144.585938 298.132812 141.808594 300.175781 139.445312 L 309.175781 129.027344 C 310.550781 127.433594 313.019531 127.421875 314.414062 129 L 341.035156 159.175781 L 341.914062 160.171875 C 341.910156 160.175781 341.90625 160.183594 341.902344 160.1875 C 334.429688 170.519531 324.15625 176.890625 312.828125 176.890625 C 289.953125 176.890625 271.402344 150.929688 271.402344 118.902344 C 271.402344 86.859375 289.953125 60.898438 312.828125 60.898438 C 335.699219 60.898438 354.25 86.859375 354.25 118.902344 C 354.25 130.328125 351.882812 140.976562 347.8125 149.964844 M 312.828125 58.214844 C 285.144531 58.214844 262.699219 85.390625 262.699219 118.902344 C 262.699219 152.414062 285.144531 179.574219 312.828125 179.574219 C 340.507812 179.574219 362.953125 152.414062 362.953125 118.902344 C 362.953125 85.390625 340.507812 58.214844 312.828125 58.214844 "/><path fill="currentColor" d="M 322.410156 91.421875 L 303.148438 115.480469 C 302.5 116.199219 301.308594 115.738281 301.308594 114.773438 L 301.308594 96.117188 L 301.351562 92.882812 C 301.351562 92.757812 301.351562 92.644531 301.359375 92.519531 C 301.359375 92.453125 301.359375 92.371094 301.371094 92.304688 C 301.453125 88.671875 302.015625 86 302.628906 84.132812 L 290.054688 84.132812 C 290.664062 86 291.21875 88.671875 291.3125 92.304688 C 291.324219 92.328125 291.324219 92.347656 291.324219 92.371094 C 291.332031 92.542969 291.34375 92.710938 291.34375 92.882812 L 291.34375 127.253906 C 291.34375 129.34375 293.546875 130.910156 295.402344 129.953125 C 295.957031 129.667969 296.542969 129.171875 297.019531 128.769531 C 298.566406 127.46875 299.78125 125.789062 301.316406 124.160156 L 327.675781 92.042969 C 328.375 91.238281 329.167969 90.367188 330.039062 89.464844 C 330.164062 89.328125 330.300781 89.191406 330.4375 89.054688 C 332.191406 87.277344 334.226562 85.46875 336.445312 84.132812 L 324.980469 84.132812 C 324.996094 87.390625 324 89.773438 322.410156 91.421875 "/><path fill="currentColor" d="M 98.714844 261.132812 L 80.878906 236.527344 L 94.699219 218.925781 C 95.308594 218.167969 95.765625 217.65625 96.105469 217.367188 L 96.273438 217.152344 L 97.472656 216.453125 L 89.515625 216.453125 L 89.359375 217.042969 C 88.96875 217.675781 88.617188 218.1875 88.308594 218.574219 L 74.261719 236.722656 L 74.261719 218.75 C 74.261719 217.820312 74.324219 217.441406 74.378906 217.285156 L 74.78125 216.453125 L 64.15625 216.453125 L 64.492188 217.089844 L 64.558594 217.28125 C 64.613281 217.441406 64.675781 217.824219 64.675781 218.75 L 64.675781 261.296875 C 64.675781 262.003906 64.632812 262.527344 64.550781 262.847656 L 64.496094 263.058594 L 64.085938 263.660156 L 74.613281 263.660156 L 74.378906 262.828125 C 74.324219 262.671875 74.261719 262.277344 74.261719 261.296875 L 74.261719 242.539062 L 87.699219 261.464844 C 88.171875 262.128906 88.472656 262.652344 88.597656 263.011719 L 88.78125 263.660156 L 100.921875 263.660156 L 99.953125 262.714844 C 99.742188 262.515625 99.328125 261.980469 98.714844 261.132812 "/><path fill="currentColor" d="M 127.84375 217.285156 L 128.242188 216.453125 L 117.554688 216.453125 L 117.886719 217.089844 L 117.953125 217.285156 C 118.078125 217.640625 118.136719 218.132812 118.136719 218.75 L 118.136719 261.296875 C 118.136719 261.957031 118.078125 262.472656 117.953125 262.828125 L 117.722656 263.660156 L 128.105469 263.660156 L 127.828125 262.789062 C 127.765625 262.667969 127.660156 262.308594 127.660156 261.296875 L 127.660156 218.75 C 127.660156 218.132812 127.71875 217.640625 127.84375 217.285156 "/><path fill="currentColor" d="M 228.46875 220.265625 C 237.808594 220.265625 242.542969 226.890625 242.542969 239.957031 C 242.542969 251.296875 239.113281 257.792969 232.347656 259.269531 C 230.863281 259.609375 229.445312 259.78125 228.136719 259.78125 C 223.890625 259.78125 220.554688 258.140625 218.214844 254.902344 C 215.726562 251.511719 214.464844 246.480469 214.464844 239.957031 C 214.464844 226.890625 219.175781 220.265625 228.46875 220.265625 M 228.46875 215.738281 C 220.8125 215.738281 214.804688 217.863281 210.605469 222.050781 C 206.40625 226.234375 204.277344 232.28125 204.277344 240.023438 C 204.277344 247.71875 206.40625 253.746094 210.605469 257.933594 C 214.804688 262.121094 220.8125 264.242188 228.46875 264.242188 C 236.171875 264.242188 242.203125 262.121094 246.402344 257.933594 C 250.601562 253.746094 252.730469 247.699219 252.730469 239.957031 C 252.730469 232.261719 250.601562 226.234375 246.402344 222.050781 C 242.203125 217.863281 236.171875 215.738281 228.46875 215.738281 "/><path fill="currentColor" d="M 371.972656 230.035156 C 371.972656 232.785156 371.0625 234.949219 369.269531 236.464844 C 367.457031 237.992188 364.847656 238.789062 361.503906 238.828125 L 360.71875 238.828125 C 360.507812 238.804688 360.332031 238.789062 360.1875 238.777344 L 360.1875 220.851562 L 362.375 220.851562 C 367.832031 220.851562 370.882812 223 371.710938 227.425781 C 371.882812 228.363281 371.972656 229.238281 371.972656 230.035156 M 385.425781 262.730469 C 384.941406 262.085938 384.519531 261.550781 384.171875 261.128906 L 369.6875 241.710938 C 373.074219 241.035156 375.867188 239.800781 377.984375 238.035156 C 380.53125 235.871094 381.824219 233.046875 381.824219 229.644531 C 381.824219 228.328125 381.617188 226.949219 381.210938 225.546875 C 379.804688 220.652344 375.839844 217.660156 369.429688 216.648438 C 368.304688 216.476562 367.277344 216.386719 366.378906 216.386719 L 350.21875 216.453125 L 350.550781 217.089844 L 350.609375 217.25 C 350.691406 217.664062 350.734375 218.167969 350.734375 218.75 L 350.734375 261.296875 C 350.734375 262.003906 350.695312 262.527344 350.609375 262.847656 L 350.558594 263.058594 L 350.144531 263.660156 L 360.703125 263.660156 L 360.4375 262.816406 C 360.316406 262.507812 360.253906 261.996094 360.253906 261.296875 L 360.253906 242.8125 L 373.289062 261.457031 C 373.671875 262.039062 373.957031 262.566406 374.125 263.011719 L 374.304688 263.660156 L 386.625 263.660156 L 385.679688 262.976562 Z M 385.425781 262.730469 "/><path fill="currentColor" d="M 413.328125 254.902344 C 410.835938 251.507812 409.574219 246.484375 409.574219 239.957031 C 409.574219 226.890625 414.285156 220.265625 423.578125 220.265625 C 432.917969 220.265625 437.652344 226.890625 437.652344 239.957031 C 437.652344 251.296875 434.222656 257.792969 427.460938 259.269531 L 427.457031 259.269531 C 425.972656 259.609375 424.554688 259.78125 423.246094 259.78125 C 419 259.78125 415.664062 258.140625 413.328125 254.902344 M 423.578125 215.738281 C 415.925781 215.738281 409.914062 217.859375 405.714844 222.046875 C 401.519531 226.234375 399.386719 232.28125 399.386719 240.023438 C 399.386719 247.722656 401.519531 253.746094 405.714844 257.933594 C 409.914062 262.121094 415.925781 264.242188 423.578125 264.242188 C 431.28125 264.242188 437.3125 262.121094 441.511719 257.933594 C 445.710938 253.746094 447.839844 247.699219 447.839844 239.957031 C 447.839844 232.261719 445.710938 226.238281 441.511719 222.046875 C 437.3125 217.859375 431.28125 215.738281 423.578125 215.738281 "/><path fill="currentColor" d="M 502.152344 217.285156 C 502.273438 217.640625 502.335938 218.136719 502.335938 218.75 L 502.335938 247.546875 C 502.335938 254.15625 499.265625 257.96875 492.953125 259.203125 C 491.644531 259.457031 490.359375 259.585938 489.132812 259.585938 C 485.535156 259.585938 482.648438 258.523438 480.554688 256.425781 C 478.460938 254.332031 477.398438 251.542969 477.398438 248.132812 L 477.398438 218.75 C 477.398438 218.09375 477.460938 217.578125 477.582031 217.21875 L 477.980469 216.386719 L 467.335938 216.386719 L 467.644531 217.128906 L 467.695312 217.21875 C 467.738281 217.347656 467.8125 217.722656 467.8125 218.75 L 467.8125 248.585938 C 467.8125 252.664062 469.175781 256.160156 471.863281 258.964844 C 474.546875 261.769531 478.253906 263.5 482.886719 264.109375 C 484.539062 264.328125 486.144531 264.4375 487.664062 264.4375 C 493.675781 264.4375 498.480469 262.84375 501.949219 259.691406 C 505.242188 256.664062 506.914062 252.558594 506.914062 247.484375 L 506.914062 218.75 C 506.914062 218.308594 506.953125 217.8125 507.03125 217.261719 L 507.160156 217.140625 L 507.316406 216.382812 L 501.921875 216.457031 Z M 502.152344 217.285156 "/><path fill="currentColor" d="M 551.78125 230.027344 C 551.648438 236.386719 548.445312 239.476562 541.980469 239.476562 L 538.996094 239.476562 L 538.996094 220.851562 L 542.316406 220.851562 C 545.617188 220.851562 548.082031 221.65625 549.644531 223.25 C 551.125 224.761719 551.84375 227.042969 551.78125 230.027344 M 558.347656 220.984375 C 556.222656 218.765625 553.226562 217.304688 549.441406 216.652344 C 548.40625 216.476562 547.289062 216.386719 546.121094 216.386719 L 529.128906 216.453125 L 529.347656 217.246094 C 529.433594 217.664062 529.476562 218.167969 529.476562 218.75 L 529.476562 261.296875 C 529.476562 261.925781 529.433594 262.449219 529.359375 262.828125 L 528.960938 263.660156 L 539.578125 263.660156 L 539.363281 263.242188 L 539.191406 262.863281 C 539.105469 262.453125 539.0625 261.929688 539.0625 261.296875 L 539.0625 244.070312 L 543.050781 244.070312 C 547.976562 244.070312 552.046875 243.164062 555.148438 241.371094 C 558.140625 239.609375 560.074219 237.195312 560.890625 234.195312 C 561.339844 232.53125 561.566406 230.914062 561.566406 229.386719 C 561.566406 226.039062 560.484375 223.210938 558.347656 220.984375 "/><path fill="currentColor" d="M 187.796875 257.292969 L 187.796875 239.824219 C 187.796875 239.238281 187.839844 238.734375 187.914062 238.363281 L 188.3125 237.53125 L 171.019531 237.53125 L 171.019531 241.1875 L 178.542969 241.1875 L 178.542969 257.953125 C 176.578125 259.035156 174.25 259.585938 171.617188 259.585938 C 167.40625 259.585938 164 258.050781 161.484375 255.019531 C 158.78125 251.800781 157.410156 247.191406 157.410156 241.320312 C 157.410156 239.308594 157.589844 237.140625 157.941406 234.875 C 158.597656 230.464844 160.332031 226.921875 163.097656 224.339844 C 165.855469 221.765625 169.238281 220.460938 173.152344 220.460938 C 176.511719 220.460938 179.96875 221.453125 183.425781 223.40625 C 184.390625 223.960938 185.234375 224.519531 185.929688 225.070312 L 186.394531 225.433594 L 186.394531 218.359375 L 186.210938 218.289062 C 181.96875 216.640625 177.285156 215.804688 172.285156 215.804688 C 165.75 215.804688 160.300781 217.425781 156.085938 220.621094 C 151.863281 223.828125 149.128906 228.339844 147.964844 234.035156 C 147.429688 236.550781 147.15625 239.011719 147.15625 241.351562 C 147.15625 248.355469 149.390625 253.960938 153.792969 258.015625 C 158.1875 262.0625 164.164062 264.113281 171.550781 264.113281 C 175.746094 264.113281 180.242188 263.4375 184.914062 262.097656 C 186.167969 261.75 187.234375 261.398438 188.085938 261.050781 L 188.347656 260.945312 L 188.242188 260.679688 C 187.945312 259.945312 187.796875 258.804688 187.796875 257.292969 "/><path fill="currentColor" d="M 327.964844 257.292969 L 327.964844 239.824219 C 327.964844 239.238281 328.007812 238.734375 328.085938 238.363281 L 328.484375 237.53125 L 311.191406 237.53125 L 311.191406 241.1875 L 318.714844 241.1875 L 318.714844 257.953125 C 316.75 259.035156 314.417969 259.585938 311.785156 259.585938 C 307.578125 259.585938 304.167969 258.050781 301.65625 255.019531 C 298.949219 251.800781 297.582031 247.191406 297.582031 241.320312 C 297.582031 239.308594 297.757812 237.140625 298.113281 234.875 C 298.765625 230.464844 300.5 226.921875 303.265625 224.339844 C 306.027344 221.765625 309.410156 220.460938 313.324219 220.460938 C 316.683594 220.460938 320.140625 221.453125 323.597656 223.40625 C 324.558594 223.960938 325.402344 224.519531 326.101562 225.070312 L 326.5625 225.433594 L 326.5625 218.359375 L 326.382812 218.289062 C 322.140625 216.640625 317.453125 215.804688 312.453125 215.804688 C 305.921875 215.804688 300.46875 217.425781 296.253906 220.621094 C 292.03125 223.828125 289.300781 228.339844 288.136719 234.035156 C 287.597656 236.550781 287.328125 239.011719 287.328125 241.351562 C 287.328125 248.355469 289.558594 253.960938 293.964844 258.015625 C 298.359375 262.0625 304.335938 264.113281 311.71875 264.113281 C 315.914062 264.113281 320.414062 263.4375 325.085938 262.097656 C 326.339844 261.75 327.40625 261.398438 328.253906 261.050781 L 328.519531 260.945312 L 328.414062 260.679688 C 328.117188 259.941406 327.964844 258.804688 327.964844 257.292969 "/></symbol><symbol id="word" viewBox="62 214 504 52"><path fill="currentColor" d="M 98.714844 261.132812 L 80.878906 236.527344 L 94.699219 218.925781 C 95.308594 218.167969 95.765625 217.65625 96.105469 217.367188 L 96.273438 217.152344 L 97.472656 216.453125 L 89.515625 216.453125 L 89.359375 217.042969 C 88.96875 217.675781 88.617188 218.1875 88.308594 218.574219 L 74.261719 236.722656 L 74.261719 218.75 C 74.261719 217.820312 74.324219 217.441406 74.378906 217.285156 L 74.78125 216.453125 L 64.15625 216.453125 L 64.492188 217.089844 L 64.558594 217.28125 C 64.613281 217.441406 64.675781 217.824219 64.675781 218.75 L 64.675781 261.296875 C 64.675781 262.003906 64.632812 262.527344 64.550781 262.847656 L 64.496094 263.058594 L 64.085938 263.660156 L 74.613281 263.660156 L 74.378906 262.828125 C 74.324219 262.671875 74.261719 262.277344 74.261719 261.296875 L 74.261719 242.539062 L 87.699219 261.464844 C 88.171875 262.128906 88.472656 262.652344 88.597656 263.011719 L 88.78125 263.660156 L 100.921875 263.660156 L 99.953125 262.714844 C 99.742188 262.515625 99.328125 261.980469 98.714844 261.132812 "/><path fill="currentColor" d="M 127.84375 217.285156 L 128.242188 216.453125 L 117.554688 216.453125 L 117.886719 217.089844 L 117.953125 217.285156 C 118.078125 217.640625 118.136719 218.132812 118.136719 218.75 L 118.136719 261.296875 C 118.136719 261.957031 118.078125 262.472656 117.953125 262.828125 L 117.722656 263.660156 L 128.105469 263.660156 L 127.828125 262.789062 C 127.765625 262.667969 127.660156 262.308594 127.660156 261.296875 L 127.660156 218.75 C 127.660156 218.132812 127.71875 217.640625 127.84375 217.285156 "/><path fill="currentColor" d="M 228.46875 220.265625 C 237.808594 220.265625 242.542969 226.890625 242.542969 239.957031 C 242.542969 251.296875 239.113281 257.792969 232.347656 259.269531 C 230.863281 259.609375 229.445312 259.78125 228.136719 259.78125 C 223.890625 259.78125 220.554688 258.140625 218.214844 254.902344 C 215.726562 251.511719 214.464844 246.480469 214.464844 239.957031 C 214.464844 226.890625 219.175781 220.265625 228.46875 220.265625 M 228.46875 215.738281 C 220.8125 215.738281 214.804688 217.863281 210.605469 222.050781 C 206.40625 226.234375 204.277344 232.28125 204.277344 240.023438 C 204.277344 247.71875 206.40625 253.746094 210.605469 257.933594 C 214.804688 262.121094 220.8125 264.242188 228.46875 264.242188 C 236.171875 264.242188 242.203125 262.121094 246.402344 257.933594 C 250.601562 253.746094 252.730469 247.699219 252.730469 239.957031 C 252.730469 232.261719 250.601562 226.234375 246.402344 222.050781 C 242.203125 217.863281 236.171875 215.738281 228.46875 215.738281 "/><path fill="currentColor" d="M 371.972656 230.035156 C 371.972656 232.785156 371.0625 234.949219 369.269531 236.464844 C 367.457031 237.992188 364.847656 238.789062 361.503906 238.828125 L 360.71875 238.828125 C 360.507812 238.804688 360.332031 238.789062 360.1875 238.777344 L 360.1875 220.851562 L 362.375 220.851562 C 367.832031 220.851562 370.882812 223 371.710938 227.425781 C 371.882812 228.363281 371.972656 229.238281 371.972656 230.035156 M 385.425781 262.730469 C 384.941406 262.085938 384.519531 261.550781 384.171875 261.128906 L 369.6875 241.710938 C 373.074219 241.035156 375.867188 239.800781 377.984375 238.035156 C 380.53125 235.871094 381.824219 233.046875 381.824219 229.644531 C 381.824219 228.328125 381.617188 226.949219 381.210938 225.546875 C 379.804688 220.652344 375.839844 217.660156 369.429688 216.648438 C 368.304688 216.476562 367.277344 216.386719 366.378906 216.386719 L 350.21875 216.453125 L 350.550781 217.089844 L 350.609375 217.25 C 350.691406 217.664062 350.734375 218.167969 350.734375 218.75 L 350.734375 261.296875 C 350.734375 262.003906 350.695312 262.527344 350.609375 262.847656 L 350.558594 263.058594 L 350.144531 263.660156 L 360.703125 263.660156 L 360.4375 262.816406 C 360.316406 262.507812 360.253906 261.996094 360.253906 261.296875 L 360.253906 242.8125 L 373.289062 261.457031 C 373.671875 262.039062 373.957031 262.566406 374.125 263.011719 L 374.304688 263.660156 L 386.625 263.660156 L 385.679688 262.976562 Z M 385.425781 262.730469 "/><path fill="currentColor" d="M 413.328125 254.902344 C 410.835938 251.507812 409.574219 246.484375 409.574219 239.957031 C 409.574219 226.890625 414.285156 220.265625 423.578125 220.265625 C 432.917969 220.265625 437.652344 226.890625 437.652344 239.957031 C 437.652344 251.296875 434.222656 257.792969 427.460938 259.269531 L 427.457031 259.269531 C 425.972656 259.609375 424.554688 259.78125 423.246094 259.78125 C 419 259.78125 415.664062 258.140625 413.328125 254.902344 M 423.578125 215.738281 C 415.925781 215.738281 409.914062 217.859375 405.714844 222.046875 C 401.519531 226.234375 399.386719 232.28125 399.386719 240.023438 C 399.386719 247.722656 401.519531 253.746094 405.714844 257.933594 C 409.914062 262.121094 415.925781 264.242188 423.578125 264.242188 C 431.28125 264.242188 437.3125 262.121094 441.511719 257.933594 C 445.710938 253.746094 447.839844 247.699219 447.839844 239.957031 C 447.839844 232.261719 445.710938 226.238281 441.511719 222.046875 C 437.3125 217.859375 431.28125 215.738281 423.578125 215.738281 "/><path fill="currentColor" d="M 502.152344 217.285156 C 502.273438 217.640625 502.335938 218.136719 502.335938 218.75 L 502.335938 247.546875 C 502.335938 254.15625 499.265625 257.96875 492.953125 259.203125 C 491.644531 259.457031 490.359375 259.585938 489.132812 259.585938 C 485.535156 259.585938 482.648438 258.523438 480.554688 256.425781 C 478.460938 254.332031 477.398438 251.542969 477.398438 248.132812 L 477.398438 218.75 C 477.398438 218.09375 477.460938 217.578125 477.582031 217.21875 L 477.980469 216.386719 L 467.335938 216.386719 L 467.644531 217.128906 L 467.695312 217.21875 C 467.738281 217.347656 467.8125 217.722656 467.8125 218.75 L 467.8125 248.585938 C 467.8125 252.664062 469.175781 256.160156 471.863281 258.964844 C 474.546875 261.769531 478.253906 263.5 482.886719 264.109375 C 484.539062 264.328125 486.144531 264.4375 487.664062 264.4375 C 493.675781 264.4375 498.480469 262.84375 501.949219 259.691406 C 505.242188 256.664062 506.914062 252.558594 506.914062 247.484375 L 506.914062 218.75 C 506.914062 218.308594 506.953125 217.8125 507.03125 217.261719 L 507.160156 217.140625 L 507.316406 216.382812 L 501.921875 216.457031 Z M 502.152344 217.285156 "/><path fill="currentColor" d="M 551.78125 230.027344 C 551.648438 236.386719 548.445312 239.476562 541.980469 239.476562 L 538.996094 239.476562 L 538.996094 220.851562 L 542.316406 220.851562 C 545.617188 220.851562 548.082031 221.65625 549.644531 223.25 C 551.125 224.761719 551.84375 227.042969 551.78125 230.027344 M 558.347656 220.984375 C 556.222656 218.765625 553.226562 217.304688 549.441406 216.652344 C 548.40625 216.476562 547.289062 216.386719 546.121094 216.386719 L 529.128906 216.453125 L 529.347656 217.246094 C 529.433594 217.664062 529.476562 218.167969 529.476562 218.75 L 529.476562 261.296875 C 529.476562 261.925781 529.433594 262.449219 529.359375 262.828125 L 528.960938 263.660156 L 539.578125 263.660156 L 539.363281 263.242188 L 539.191406 262.863281 C 539.105469 262.453125 539.0625 261.929688 539.0625 261.296875 L 539.0625 244.070312 L 543.050781 244.070312 C 547.976562 244.070312 552.046875 243.164062 555.148438 241.371094 C 558.140625 239.609375 560.074219 237.195312 560.890625 234.195312 C 561.339844 232.53125 561.566406 230.914062 561.566406 229.386719 C 561.566406 226.039062 560.484375 223.210938 558.347656 220.984375 "/><path fill="currentColor" d="M 187.796875 257.292969 L 187.796875 239.824219 C 187.796875 239.238281 187.839844 238.734375 187.914062 238.363281 L 188.3125 237.53125 L 171.019531 237.53125 L 171.019531 241.1875 L 178.542969 241.1875 L 178.542969 257.953125 C 176.578125 259.035156 174.25 259.585938 171.617188 259.585938 C 167.40625 259.585938 164 258.050781 161.484375 255.019531 C 158.78125 251.800781 157.410156 247.191406 157.410156 241.320312 C 157.410156 239.308594 157.589844 237.140625 157.941406 234.875 C 158.597656 230.464844 160.332031 226.921875 163.097656 224.339844 C 165.855469 221.765625 169.238281 220.460938 173.152344 220.460938 C 176.511719 220.460938 179.96875 221.453125 183.425781 223.40625 C 184.390625 223.960938 185.234375 224.519531 185.929688 225.070312 L 186.394531 225.433594 L 186.394531 218.359375 L 186.210938 218.289062 C 181.96875 216.640625 177.285156 215.804688 172.285156 215.804688 C 165.75 215.804688 160.300781 217.425781 156.085938 220.621094 C 151.863281 223.828125 149.128906 228.339844 147.964844 234.035156 C 147.429688 236.550781 147.15625 239.011719 147.15625 241.351562 C 147.15625 248.355469 149.390625 253.960938 153.792969 258.015625 C 158.1875 262.0625 164.164062 264.113281 171.550781 264.113281 C 175.746094 264.113281 180.242188 263.4375 184.914062 262.097656 C 186.167969 261.75 187.234375 261.398438 188.085938 261.050781 L 188.347656 260.945312 L 188.242188 260.679688 C 187.945312 259.945312 187.796875 258.804688 187.796875 257.292969 "/><path fill="currentColor" d="M 327.964844 257.292969 L 327.964844 239.824219 C 327.964844 239.238281 328.007812 238.734375 328.085938 238.363281 L 328.484375 237.53125 L 311.191406 237.53125 L 311.191406 241.1875 L 318.714844 241.1875 L 318.714844 257.953125 C 316.75 259.035156 314.417969 259.585938 311.785156 259.585938 C 307.578125 259.585938 304.167969 258.050781 301.65625 255.019531 C 298.949219 251.800781 297.582031 247.191406 297.582031 241.320312 C 297.582031 239.308594 297.757812 237.140625 298.113281 234.875 C 298.765625 230.464844 300.5 226.921875 303.265625 224.339844 C 306.027344 221.765625 309.410156 220.460938 313.324219 220.460938 C 316.683594 220.460938 320.140625 221.453125 323.597656 223.40625 C 324.558594 223.960938 325.402344 224.519531 326.101562 225.070312 L 326.5625 225.433594 L 326.5625 218.359375 L 326.382812 218.289062 C 322.140625 216.640625 317.453125 215.804688 312.453125 215.804688 C 305.921875 215.804688 300.46875 217.425781 296.253906 220.621094 C 292.03125 223.828125 289.300781 228.339844 288.136719 234.035156 C 287.597656 236.550781 287.328125 239.011719 287.328125 241.351562 C 287.328125 248.355469 289.558594 253.960938 293.964844 258.015625 C 298.359375 262.0625 304.335938 264.113281 311.71875 264.113281 C 315.914062 264.113281 320.414062 263.4375 325.085938 262.097656 C 326.339844 261.75 327.40625 261.398438 328.253906 261.050781 L 328.519531 260.945312 L 328.414062 260.679688 C 328.117188 259.941406 327.964844 258.804688 327.964844 257.292969 "/></symbol></svg>
+
+<header class="top"><div class="wrap">
+  <a href="#trang-chu" aria-label="Trang chủ"><svg class="logo" viewBox="0 0 506 214"><use href="#logo"/></svg></a>
+  <nav id="nav" aria-label="Điều hướng">
+    <a href="#trang-chu">Trang chủ</a><a href="#ke-hoach">Kế hoạch</a><a href="#phan-cong">Phân công</a><a href="#bao-cao">Báo cáo tuần</a><a href="#doanh-so">Doanh số 🔒</a>
+  </nav>
+  <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="q" type="search" placeholder="Tìm việc, kênh, người…" aria-label="Tìm kiếm"></label>
+</div></header>
+
+<main class="wrap" id="view"></main>
+
+<footer><div class="wrap"><span>Vận hành công việc · Khối Marketing Kigo Group · Tài liệu nội bộ</span><span id="upd">Đang dùng dữ liệu demo</span></div></footer>
+
+<script src="config.js"></script>
+<script>
+/* ===== DATA (bản thật sẽ lấy từ Google Sheets, mỗi kế hoạch một tab) ===== */
+let PEOPLE={phuong:{n:"Phương",i:"P",role:"Content & video"},linh:{n:"Linh",i:"L",role:"Fanpage & Threads"},ha:{n:"Hà Digital",i:"HD",role:"Tiktok, sàn, KOL"},thuy:{n:"Thủy",i:"T",role:"Sàn Shopee"},nhi:{n:"Nhi",i:"N",role:"Content outsource · team Trinh"}};
+let PLANS=[
+ {id:"phan-cong-gd1",name:"Phân công triển khai Marketing",brand:"Kigo · Ninemila",style:"kigo",owner:"Hào",phase:"Giai đoạn 1",from:"09/11/2026",desc:"Thứ tự ưu tiên, người phụ trách và chỉ số kết quả cho từng kênh.",slide:"https://kigogroupvn-dot.github.io/phan-cong-trien-khai-marketing/slide/"},
+ {id:"content-ninemila",name:"Lịch & brief content fanpage",brand:"Ninemila",style:"ninemila",owner:"Linh",phase:"15/11 – 15/12",desc:"22 bài đăng fanpage, 7 KOC Reels, 6 nhóm nội dung.",url:"https://kigogroupvn-dot.github.io/lich-content-ninemila/"},
+ {id:"booking-ninemila",name:"Booking KOL/KOC",brand:"Ninemila",style:"ninemila",owner:"Hà Digital",phase:"Tháng 11",desc:"Booking KOC review Calming Beer và KOL tầm trung.",sample:1},
+ {id:"tiktok-vp",name:"Tiktok văn phòng Kigo",brand:"Kigo",style:"kigo",owner:"Phương",phase:"Tháng 11",desc:"Plan kênh Tiktok văn phòng và lịch quay.",sample:1},
+ {id:"threads-ninemila",name:"Threads Ninemila",brand:"Ninemila",style:"ninemila",owner:"Linh",phase:"Tháng 11",desc:"21 bài mỗi tuần, content bắt trend.",sample:1}
+];
+let TASKS=[
+ {p:"phan-cong-gd1",ch:"Tiktok Kigo",t:"Lên plan kênh Tiktok văn phòng",who:["phuong","linh"],st:"due",due:"14/11"},
+ {p:"phan-cong-gd1",ch:"Tiktok chị Loan",t:"Xây kênh Tiktok chị Loan và lên plan",who:["ha"],st:"due",due:"14/11"},
+ {p:"phan-cong-gd1",ch:"Tiktok Ninemila",t:"Đăng video đã dựng, 3–5 video mỗi tuần",s:"Đã đăng 7/25 video dựng sẵn",who:["phuong"],st:"run",pw:[3,5]},
+ {p:"phan-cong-gd1",ch:"Threads Ninemila",t:"Đăng liên tục content bắt trend",s:"Linh 14 bài · Phương 7 bài mỗi tuần",who:["linh","phuong"],st:"run",pwBy:{linh:14,phuong:7}},
+ {p:"phan-cong-gd1",ch:"Tiktok Shop",t:"Bộ SIS mới, đăng bổ sung 7 sản phẩm & ≥10 combo",who:["ha"],st:"run"},
+ {p:"phan-cong-gd1",ch:"Shopee",t:"Bộ SIS mới, đăng bổ sung 7 sản phẩm & ≥10 combo",s:"Lưu ý xây cả shop Ninemila mới",who:["thuy"],st:"run"},
+ {p:"phan-cong-gd1",ch:"KOL/KOC",t:"Booking KOL/KOC phủ thương hiệu Ninemila",who:["ha"],st:"run"},
+ {p:"phan-cong-gd1",ch:"Fanpage Kigo Group",t:"Bài gốc, 3 bài mỗi tuần",who:["linh"],st:"run",pw:[3,3]},
+ {p:"phan-cong-gd1",ch:"Fanpage Ninemila",t:"Bài gốc, 5 bài mỗi tuần",who:["linh"],st:"run",pw:[5,5]},
+ {p:"phan-cong-gd1",ch:"4 page ads",t:"Re-up song song từ nguồn content Nhi outsource",who:["phuong"],st:"run"},
+ {p:"phan-cong-gd1",ch:"Page chạy lẻ",t:"Viết content cho page Kigo Store và page Dầu gội Ninemila",s:"Mỗi page 2 bài mỗi ngày",who:["nhi"],st:"run",pw:[28,28]},
+ {p:"phan-cong-gd1",ch:"IG Kigo Global",t:"Dịch ảnh và content từ bài Việt Nam, 2 bài mỗi tuần",who:["phuong"],st:"run",pw:[2,2]},
+ {p:"phan-cong-gd1",ch:"IG Ninemila",t:"Re-up từ fanpage Ninemila",who:["linh"],st:"run"},
+ {p:"phan-cong-gd1",ch:"Kênh đại lý",t:"Duy trì đăng bài cho đại lý",s:"Mỗi người 1 bài mỗi tuần",who:["linh","phuong"],st:"run",pwBy:{linh:1,phuong:1}},
+ {p:"booking-ninemila",ch:"Tiktok",t:"Booking 10 KOC review Calming Beer",who:["ha"],st:"run",due:"30/11",goal:"6/10 KOC"},
+ {p:"booking-ninemila",ch:"Tiktok",t:"Tổng hợp video KOC đã đăng",who:["phuong"],st:"due",due:"05/12",n:"Chờ đủ 10 video"},
+ {p:"booking-ninemila",ch:"Facebook",t:"Đàm phán gói KOL tầm trung",who:["ha"],st:"run",due:"10/11",goal:"1/2 KOL",n:"KOL thứ 2 chưa báo giá"},
+ {p:"tiktok-vp",ch:"Tiktok",t:"Quay 8 video văn phòng tuần đầu",who:["phuong","linh"],st:"run",due:"20/11",goal:"3/8 video"},
+ {p:"threads-ninemila",ch:"Threads",t:"Đăng 21 bài tuần 2/11",who:["linh","phuong"],st:"run",goal:"16/21 bài"}
+];
+const DUE=[{d:"14/11",w:"Thứ Bảy",t:"Nộp plan Tiktok Kigo",by:"Phương, Linh hỗ trợ"},{d:"14/11",w:"Thứ Bảy",t:"Nộp plan Tiktok chị Loan",by:"Hà Digital"},{d:"18/11",w:"Thứ Tư",t:"Training AI toàn công ty",by:"Hào"}];
+/* ===== HELPERS ===== */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const LABEL={due:"Có hạn",run:"Đang chạy",hold:"Tạm hoãn",done:"Hoàn thành"};
+const st=t=>late(t)?`<span class="st due">Trễ hạn ${esc(t.due)}</span>`:`<span class="st ${t.st}">${t.due?"Hạn "+esc(t.due):LABEL[t.st]}</span>`;
+const plan=id=>PLANS.find(p=>p.id===id);
+const TODAY=new Date();TODAY.setHours(0,0,0,0);
+const dd=s=>{const m=/^(\d{1,2})\/(\d{1,2})(?:\/(\d{4}))?/.exec(String(s||"").trim());return m?new Date(m[3]?+m[3]:TODAY.getFullYear(),+m[2]-1,+m[1]):null};
+const late=t=>t.st!=="done"&&dd(t.due)&&dd(t.due)<TODAY;
+
+const mine=k=>TASKS.filter(t=>t.who.includes(k));
+/* ===== TIẾN ĐỘ TUẦN ===== */
+let DEMO=true, SOURCE_NOTE="Đang dùng dữ liệu demo";
+const monday=d=>{const x=new Date(d);x.setHours(0,0,0,0);x.setDate(x.getDate()-((x.getDay()+6)%7));return x};
+const fmtD=d=>String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0");
+const wkKey=d=>fmtD(d)+"/"+d.getFullYear();
+const CUR_WK=wkKey(monday(TODAY));
+let WEEKS=[ /* demo: tuần hiện tại */
+ {wk:CUR_WK,id:"gd1-04",ch:"Threads Ninemila",who:"linh",target:14,done:11,links:[]},
+ {wk:CUR_WK,id:"gd1-04",ch:"Threads Ninemila",who:"phuong",target:7,done:5,links:[]},
+ {wk:CUR_WK,id:"nm",ch:"Fanpage Ninemila",who:"linh",target:5,done:4,links:[],src:"Sheet Ninemila"},
+ {wk:CUR_WK,id:"gd1-08",ch:"Fanpage Kigo Group",who:"linh",target:3,done:3,links:[]},
+ {wk:CUR_WK,id:"gd1-03",ch:"Tiktok Ninemila",who:"phuong",target:3,done:3,links:[]},
+ {wk:CUR_WK,id:"gd1-11",ch:"Page chạy lẻ (2 page)",who:"nhi",target:28,done:24,links:[]},
+ {wk:CUR_WK,id:"gd1-12",ch:"IG Kigo Global",who:"phuong",target:2,done:1,links:[],n:"Chờ duyệt ảnh dịch"},
+ {wk:CUR_WK,id:"gd1-14",ch:"Kênh đại lý",who:"linh",target:1,done:1,links:[]},
+ {wk:CUR_WK,id:"gd1-14",ch:"Kênh đại lý",who:"phuong",target:1,done:0,links:[]}];
+const wkRows=(wk=CUR_WK)=>WEEKS.filter(w=>w.wk===wk);
+function posts(k){return String(wkRows().filter(w=>w.who===k).reduce((a,w)=>a+w.target,0))}
+const doneOf=k=>wkRows().filter(w=>w.who===k).reduce((a,w)=>a+(w.done||0),0);
+const behind=w=>{const day=(TODAY.getDay()+6)%7;return w.target&&day>=3&&(w.done||0)/w.target<0.5};
+const pbar=(d,t)=>`<span class="wbar"><i style="width:${t?Math.min(100,d/t*100):0}%"></i></span>`;
+
+
+/* ===== VIEWS ===== */
+function vHome(){
+  const plansHtml=PLANS.map(p=>planCard(p)).join("");
+  const att=[...TASKS.filter(late).map(t=>({k:0,t})),...wkRows().filter(behind).map(w=>({k:3,w})),...TASKS.filter(t=>!late(t)&&t.due&&dd(t.due)-TODAY<8*864e5&&dd(t.due)>=TODAY&&t.st!=="done").map(t=>({k:1,t})),...TASKS.filter(t=>t.n).map(t=>({k:2,t})),...wkRows().filter(w=>w.n).map(w=>({k:4,w}))];
+  const lab=["Trễ hạn","Sắp đến hạn","Vướng mắc","Chậm tiến độ","Vướng mắc"];
+  const dueHtml=att.map(({k,t,w})=>w?`<li><span class="d att${k===3?0:2}">${k===3?(w.done||0)+"/"+w.target:"!"}<small>${lab[k].toUpperCase()}</small></span><div><b>${esc(k===4?w.n:w.ch+" tuần này")}</b><span>${k===4?esc(w.ch)+" · ":""}${PEOPLE[w.who]?PEOPLE[w.who].n:esc(w.who)} · Tiến độ tuần</span></div><span class="st ${k===3?"due":"run"}">${k===3?"Đạt "+Math.round((w.done||0)/w.target*100)+"%":"Đang chạy"}</span></li>`
+    :`<li><span class="d att${k}">${k===2?"!":esc(t.due)}<small>${lab[k].toUpperCase()}</small></span><div><b>${esc(k===2?t.n:t.t)}</b><span>${k===2?esc(t.t)+" · ":""}${t.who.map(x=>PEOPLE[x]?PEOPLE[x].n:x).join(", ")} · ${esc(plan(t.p)?plan(t.p).name:"")}</span></div>${st(t)}</li>`).join("")||`<li><span class="d att1">✓</span><div><b>Không có việc cần chú ý</b><span>Mọi việc đang đúng tiến độ.</span></div></li>`;
+  const ppl=Object.keys(PEOPLE).map(k=>`<a class="person" href="#${k}"><span class="av">${PEOPLE[k].i}</span><div><b>${PEOPLE[k].n}</b><small>${esc(PEOPLE[k].role)}</small></div><div class="n"><strong>${mine(k).length}</strong>việc</div></a>`).join("");
+  const tg=wkRows().reduce((a,w)=>a+w.target,0), dn=wkRows().reduce((a,w)=>a+(w.done||0),0);
+  return `<section class="heroE bleed"><div class="inner"><span class="kicker">File theo dõi</span><h1>Vận hành công việc<em>Khối Marketing</em></h1>
+    <dl><dt>Phạm vi</dt><dd>Nội bộ vận hành Kigo Group</dd><dt>Phụ trách</dt><dd>Hào – Leader Marketing</dd><dt>Mục đích</dt><dd>Tổng hợp kế hoạch, báo cáo và theo dõi trực tiếp tiến độ công việc, kết quả doanh số.</dd></dl></div></section>
+    <section class="bandE bleed"><div class="boxes"><div><b>${PLANS.length}</b><span>kế hoạch</span></div><div><b>${TASKS.length}</b><span>đầu việc</span></div><div><b>${Object.keys(PEOPLE).length}</b><span>nhân sự</span></div><div><b>${dn}/${tg}</b><span>bài tuần này</span></div></div><small>${esc(SOURCE_NOTE)}.</small></section>
+    <div class="blockhead" id="ke-hoach-list"><h2>Kế hoạch</h2><a href="#ke-hoach">Xem tất cả →</a></div><div class="plans">${plansHtml}</div>
+    <div class="two"><div><div class="blockhead"><h2>Cần chú ý</h2></div><ul class="due">${dueHtml}</ul></div>
+    <div><div class="blockhead"><h2>Phân công</h2><a href="#phan-cong">Xem bảng phân công →</a></div><div class="people">${ppl}</div></div></div>`;
+}
+let pFilter="all";
+function weekBlock(k){const rows=wkRows().filter(w=>w.who===k);if(!rows.length)return "";
+  return `<div class="blockhead"><h2>Tiến độ tuần này</h2><span class="wklab">Tuần từ ${CUR_WK.slice(0,5)}</span></div><table class="tasks wtable"><thead><tr><th>Kênh</th><th>Tiến độ</th><th class="n">Đã đăng</th><th>Link bài</th></tr></thead><tbody>${rows.map(w=>`<tr><td class="ch">${esc(w.ch)}${w.src?`<small>Đồng bộ từ ${esc(w.src)}</small>`:""}</td><td>${pbar(w.done||0,w.target)}${w.n?`<small class="warn">Vướng mắc: ${esc(w.n)}</small>`:""}</td><td class="n fig ${behind(w)?"bad":""}">${w.done||0}/${w.target}</td><td>${w.links.length?w.links.map((l,i)=>`<a class="lk" href="${esc(l)}" target="_blank" rel="noopener">Bài ${i+1}</a>`).join(" "):`<span class="z">Chưa có link</span>`}</td></tr>`).join("")}</tbody></table>`}
+
+function vPerson(k){
+  const P=PEOPLE[k], list=mine(k), due=list.filter(t=>t.st==="due").length;
+  const plansOf=[...new Set(list.map(t=>t.p))];
+  const rows=list.filter(t=>pFilter==="all"||t.st===pFilter);
+  return `<section class="bandD bleed"><span class="ring" style="right:-60px;top:-140px;width:460px;height:560px"></span><span class="ring" style="right:40px;top:-60px;width:300px;height:380px"></span>
+  <div class="crumbs"><a href="#trang-chu">Trang chủ</a> / <a href="#phan-cong">Phân công</a> / ${P.n}</div>
+  <div class="who"><span class="av">${P.i}</span><div><span class="kicker">Phân công công việc</span><h1>${P.n}</h1><p>${P.role} · ${plansOf.length} kế hoạch</p></div></div>
+  <div class="dstats"><div><b>${list.length}</b><span>đầu việc</span></div><div><b>${doneOf(k)}/${posts(k)}</b><span>bài tuần này</span></div><div><b>${list.filter(late).length}</b><span>việc trễ hạn</span></div></div></section>
+  ${weekBlock(k)}
+  <div class="blockhead"><h2>Đầu việc</h2></div>
+  <div class="filters" role="group" aria-label="Lọc theo tình trạng">${[["all","Tất cả"],["due","Có hạn"],["run","Đang chạy"],["done","Hoàn thành"]].map(([v,l])=>`<button type="button" class="chip" data-pf="${v}" aria-pressed="${pFilter===v}">${l}</button>`).join("")}</div>
+  ${rows.length?`<table class="tasks"><thead><tr><th>Kênh</th><th>Việc</th><th>Kế hoạch</th><th>Tình trạng</th></tr></thead><tbody>${rows.map(t=>`<tr><td class="ch">${esc(t.ch)}</td><td>${esc(t.t)}${t.s?`<small>${esc(t.s)}</small>`:""}${t.who.length>1?`<small>Cùng làm: ${t.who.filter(x=>x!==k).map(x=>PEOPLE[x].n).join(", ")}</small>`:""}</td><td class="plan-c">${esc(plan(t.p).name)}</td><td>${st(t)}</td></tr>`).join("")}</tbody></table>`:`<p class="empty">Không có việc nào ở tình trạng này.</p>`}`;
+}
+function vPeople(){
+  return `<div class="crumbs"><a href="#trang-chu">Trang chủ</a> / Nhân sự</div><div class="pagehead"><span class="kicker">Nhân sự</span><h1>Đội hình Khối Marketing</h1><p>Bấm vào một người để xem toàn bộ việc của người đó trên mọi kế hoạch.</p></div>
+  <div class="people">${Object.keys(PEOPLE).map(k=>`<a class="person" href="#${k}"><span class="av">${PEOPLE[k].i}</span><div><b>${PEOPLE[k].n}</b><small>${PEOPLE[k].role}</small></div><div class="n"><strong>${mine(k).length}</strong>việc · ${posts(k)} bài/tuần</div></a>`).join("")}</div>`;
+}
+function vBoard(){
+  const keys=Object.keys(PEOPLE);
+  const wk=keys.reduce((x,k)=>{const v=posts(k).split("–");return [x[0]+ +v[0],x[1]+ +(v[1]||v[0])]},[0,0]);
+  const groups=keys.map(k=>{const P=PEOPLE[k],list=mine(k),due=list.filter(t=>t.st==="due").length;
+    return `<div class="pgroup"><a class="pghead" href="#${k}"><span class="av">${P.i}</span><div><b>${P.n}</b><small>${esc(P.role)}</small></div>
+      <div class="nums"><span><strong>${list.length}</strong>việc</span>${posts(k)!=="0"?`<span><strong>${posts(k)}</strong>bài/tuần</span>`:""}${due?`<span><strong>${due}</strong>có hạn</span>`:""}</div></a>
+      <table class="tasks"><thead><tr><th style="width:22%">Kênh</th><th>Việc</th><th style="width:24%">Kế hoạch</th><th style="width:14%">Tình trạng</th></tr></thead><tbody>${list.map(t=>`<tr><td class="ch">${esc(t.ch)}</td><td>${esc(t.t)}${t.s?`<small>${esc(t.s)}</small>`:""}${t.who.length>1?`<small>Cùng làm: ${t.who.filter(x=>x!==k).map(x=>PEOPLE[x].n).join(", ")}</small>`:""}</td><td class="plan-c">${esc(plan(t.p).name)}</td><td>${st(t)}</td></tr>`).join("")}</tbody></table></div>`}).join("");
+  return `<section class="bandD bleed"><span class="ring" style="right:-60px;top:-140px;width:460px;height:560px"></span><span class="ring" style="right:40px;top:-60px;width:300px;height:380px"></span>
+    <div class="crumbs"><a href="#trang-chu">Trang chủ</a> / Phân công</div>
+    <span class="kicker" style="display:block;margin-top:20px">Khối Marketing</span><h1>Phân công công việc</h1><p>Việc của từng nhân sự trên mọi kế hoạch. Bấm vào tên để xem chi tiết.</p>
+    <div class="dstats"><div><b>${keys.length}</b><span>nhân sự</span></div><div><b>${TASKS.length}</b><span>đầu việc</span></div><div><b>${wkRows().reduce((a,w)=>a+(w.done||0),0)}/${wk[0]}</b><span>bài tuần này</span></div></div></section>
+    <div class="blockhead" style="margin-top:8px"><h2>Tiến độ bài đăng tuần này</h2></div>
+    <div class="load">${(()=>{const mx=Math.max(1,...keys.map(k=>+posts(k)));return keys.map(k=>{const t=+posts(k),d=doneOf(k);if(!t)return `<div class="lrow"><div><b>${PEOPLE[k].n}</b><small>${mine(k).length} việc</small></div><div class="ltrack"></div><div class="v" style="font-size:13px;color:var(--muted)">Theo việc</div></div>`;return `<div class="lrow"><div><b>${PEOPLE[k].n}</b><small>${mine(k).length} việc</small></div><div class="ltrack"><i class="r" style="width:${t/mx*100}%"></i><i style="width:${d/mx*100}%"></i></div><div class="v">${d}/${t}</div></div>`}).join("")})()}</div>
+    <p class="snote" style="margin-top:4px">Đậm: đã đăng · Nhạt: chỉ tiêu tuần.</p>
+    ${groups}`;
+}
+function planCard(p){
+  const list=TASKS.filter(t=>t.p===p.id), lt=list.filter(late).length;
+  return `<a class="plan${p.id==="phan-cong-gd1"?" lead":""}${p.style==="ninemila"?" nm":""}" href="${p.url||"#"+p.id}"${p.url?' target="_blank" rel="noopener"':""}><span class="kicker">${esc(p.brand)} · ${esc(p.phase)}</span><h3>${esc(p.name)}${p.url?" ↗":""}</h3><p>${esc(p.desc)}</p>
+    <div class="meta"><div><b>${list.length||"–"}</b>đầu việc</div><div><b>${esc(p.owner)}</b>phụ trách</div>${lt?`<div><b>${lt}</b>trễ hạn</div>`:""}</div>${p.sample?`<span class="smp">Demo</span>`:""}</a>`;
+}
+let bFilter="all";
+function vPlans(){
+  const brands=["all","Kigo","Ninemila"];
+  const list=PLANS.filter(p=>bFilter==="all"||p.brand.includes(bFilter));
+  return `<section class="bandD bleed"><span class="ring" style="right:-60px;top:-140px;width:460px;height:560px"></span>
+    <div class="crumbs"><a href="#trang-chu">Trang chủ</a> / Kế hoạch</div>
+    <span class="kicker" style="display:block;margin-top:20px">Khối Marketing</span><h1>Plan - Report</h1><p>Mỗi kế hoạch lấy dữ liệu từ file Google Sheets riêng của mảng đó.</p>
+    <div class="dstats"><div><b>${PLANS.length}</b><span>kế hoạch</span></div><div><b>${TASKS.length}</b><span>đầu việc</span></div><div><b>${TASKS.filter(late).length}</b><span>việc trễ hạn</span></div></div></section>
+  <div class="filters" role="group" aria-label="Lọc theo brand">${brands.map(b=>`<button type="button" class="chip" data-bf="${b}" aria-pressed="${bFilter===b}">${b==="all"?"Tất cả brand":b}</button>`).join("")}</div>
+  <div class="plans" style="margin-top:18px">${list.map(planCard).join("")}</div>`;
+}
+function vPlan(id){
+  const p=plan(id), list=TASKS.filter(t=>t.p===id), lt=list.filter(late).length, nt=list.filter(t=>t.n).length;
+  const people=[...new Set(list.flatMap(t=>t.who))];
+  return `<section class="bandD bleed${p.style==="ninemila"?" nmband":""}"><span class="ring" style="right:-60px;top:-140px;width:460px;height:560px"></span>
+    <div class="crumbs"><a href="#trang-chu">Trang chủ</a> / <a href="#ke-hoach">Kế hoạch</a> / ${esc(p.name)}</div>
+    <span class="kicker" style="display:block;margin-top:20px">${esc(p.brand)} · ${esc(p.phase)}${p.sample?" · Demo":""}</span><h1>${esc(p.name)}</h1><p>${esc(p.desc)} Phụ trách: ${esc(p.owner)}.</p>
+    <div class="planbtns">${p.slide?`<a class="pbtn" href="${p.slide}" target="_blank" rel="noopener">Xem slide ↗</a>`:""}${p.url?`<a class="pbtn" href="${p.url}" target="_blank" rel="noopener">Mở trang ${esc(p.brand)} ↗</a>`:""}<span class="pbtn ghost">Mở Google Sheet ↗</span></div>
+    <div class="dstats"><div><b>${list.length}</b><span>đầu việc</span></div><div><b>${people.length}</b><span>người tham gia</span></div><div><b>${lt}</b><span>trễ hạn</span></div></div></section>
+  ${list.length?`<table class="tasks"><thead><tr><th>Kênh</th><th>Việc</th><th>Phụ trách</th><th>Tiến độ</th><th>Tình trạng</th></tr></thead><tbody>${list.map(t=>`<tr><td class="ch">${esc(t.ch)}</td><td>${esc(t.t)}${t.s?`<small>${esc(t.s)}</small>`:""}${t.n?`<small class="warn">Vướng mắc: ${esc(t.n)}</small>`:""}</td><td>${t.who.map(x=>`<a href="#${x}">${PEOPLE[x].n}</a>`).join(", ")}</td><td class="fig">${esc(t.goal||"–")}</td><td>${st(t)}</td></tr>`).join("")}</tbody></table>`:`<p class="empty">Nội dung kế hoạch này đang nằm ở trang riêng theo style ${esc(p.brand)}. Bấm "Mở trang ${esc(p.brand)}" ở trên.</p>`}`;
+}
+let rWk=null;
+function vReport(){
+  const wks=[...new Set(WEEKS.map(w=>w.wk))].sort((a,b)=>dd(a)-dd(b)); const wk=rWk&&wks.includes(rWk)?rWk:(wks.includes(CUR_WK)?CUR_WK:wks[wks.length-1]||CUR_WK);
+  const rows=wkRows(wk), lateL=TASKS.filter(late), notes=[...TASKS.filter(t=>t.n).map(t=>({n:t.n,t:t.t,who:t.who})),...rows.filter(w=>w.n).map(w=>({n:w.n,t:w.ch,who:[w.who]}))], done=TASKS.filter(t=>t.st==="done");
+  const byCh={};rows.forEach(w=>{const c=byCh[w.ch]=byCh[w.ch]||{d:0,t:0,links:[]};c.d+=w.done||0;c.t+=w.target;c.links.push(...w.links)});
+  const sa=rows.reduce((x,w)=>x+(w.done||0),0), sb=rows.reduce((x,w)=>x+w.target,0), m0=dd(wk), end=new Date(m0);end.setDate(end.getDate()+6);
+  const links=rows.flatMap(w=>w.links.map(l=>({l,ch:w.ch,who:w.who})));
+  return `<section class="bandD bleed"><span class="ring" style="right:-60px;top:-140px;width:460px;height:560px"></span>
+    <div class="crumbs"><a href="#trang-chu">Trang chủ</a> / Báo cáo tuần</div>
+    <span class="kicker" style="display:block;margin-top:20px">Tuần ${fmtD(m0)} – ${fmtD(end)}/${end.getFullYear()}</span><h1>Báo cáo tuần</h1><p>Tự tổng hợp từ các file Sheets. Update chậm nhất 10h sáng thứ 2.</p>
+    <div class="dstats"><div><b>${sa}/${sb}</b><span>bài đã đăng / chỉ tiêu</span></div><div><b>${lateL.length}</b><span>việc trễ hạn</span></div><div><b>${notes.length}</b><span>vướng mắc</span></div></div></section>
+  ${wks.length>1?`<div class="filters" role="group" aria-label="Chọn tuần">${wks.map(w=>`<button type="button" class="chip" data-wk="${w}" aria-pressed="${w===wk}">Tuần ${w.slice(0,5)}</button>`).join("")}</div>`:""}
+  ${DEMO?`<span class="smpnote">◇ Demo: số bài đã đăng sẽ lấy từ tab "Tiến độ tuần" khi nối Sheets</span>`:""}
+  <div class="rgrid"><div><div class="blockhead"><h2>Chỉ tiêu tuần theo kênh</h2></div>
+    ${Object.entries(byCh).map(([n,c])=>`<div class="kpirow"><span>${esc(n)}</span><span class="bar"><i style="width:${c.t?Math.min(100,c.d/c.t*100):0}%"></i></span><span class="v">${c.d}/${c.t}</span></div>`).join("")||`<p class="snote">Chưa có dữ liệu tuần này.</p>`}
+    <div class="blockhead"><h2>Link bài đã đăng</h2></div><ul class="rlist">${links.map(x=>`<li><a class="lk" href="${esc(x.l)}" target="_blank" rel="noopener">${esc(x.l)}</a><span>${esc(x.ch)} · ${PEOPLE[x.who]?PEOPLE[x.who].n:esc(x.who)}</span></li>`).join("")||"<li><span>Chưa có link nào trong tuần.</span></li>"}</ul></div>
+    <div><div class="blockhead"><h2>Trễ hạn</h2></div><ul class="rlist">${lateL.map(t=>`<li><b>${esc(t.t)}</b><span>Hạn ${esc(t.due)} · ${t.who.map(x=>PEOPLE[x]?PEOPLE[x].n:x).join(", ")} · ${esc(plan(t.p)?plan(t.p).name:"")}</span></li>`).join("")||"<li><span>Không có</span></li>"}</ul>
+    <div class="blockhead"><h2>Vướng mắc</h2></div><ul class="rlist">${notes.map(t=>`<li><b>${esc(t.n)}</b><span>${esc(t.t)} · ${t.who.map(x=>PEOPLE[x]?PEOPLE[x].n:x).join(", ")}</span></li>`).join("")||"<li><span>Không có</span></li>"}</ul>
+    <div class="blockhead"><h2>Hoàn thành</h2></div><ul class="rlist">${done.map(t=>`<li><b>${esc(t.t)}</b></li>`).join("")||"<li><span>Chưa có việc nào chuyển sang Hoàn thành.</span></li>"}</ul></div></div>`;
+}
+/* ===== DOANH SỐ CHẠY LẺ (đọc qua cầu nối Apps Script, có mật khẩu) ===== */
+const SALES_URL=(window.CONFIG&&window.CONFIG.salesUrl)||"";
+const SALES_SNAPSHOT={"ok":true,"tenFile":"KIGO BÁO CÁO","tenTab":"T11/2026","capNhat":"2026-11-12T02:57:10Z","duLieu":[["KRILL OIL","","","","","DẦU GỘI","","","","","TỔNG","",""],["Tổng","CHI TIÊU IB","Doanh thu","cp/dt","","Tổng","CHI TIÊU IB","Doanh thu","cp/dt","","Tổng chi phí","Tổng Doanh Thu","CP/DT tổng"],["Tổng","0","0","#DIV/0!","","Tổng","3.975.069","2.120.400","187,47%","","3.975.069","2.120.400","187,47%"],["01/11/2026","","","","","01/11/2026","763.953 đ","","#DIV/0!"],["02/11/2026","","","","","02/11/2026","802.499 đ","","#DIV/0!"],["03/11/2026","","","","","03/11/2026","583.804 đ","530.100 đ","110,13%"],["04/11/2026","","","#DIV/0!","","04/11/2026","518.971 đ","530.100 đ","97,90%"],["05/11/2026","","","#DIV/0!","","05/11/2026","413.776 đ","","#DIV/0!"],["06/11/2026","","","#DIV/0!","","06/11/2026","563.830 đ","","#DIV/0!"],["07/11/2026","","","#DIV/0!","","07/11/2026","328.236 đ","1.060.200 đ","30,96%"],["08/11/2026","","","#DIV/0!","","08/11/2026","","","#DIV/0!"]]};
+let salesData=null, salesErr="";
+const num=v=>{const t=String(v||"").replace(/[^0-9,-]/g,"").replace(",",".");return t?parseFloat(t):0};
+const vnd=n=>Math.round(n).toLocaleString("vi-VN")+" ₫";
+const sgn=n=>(n<0?"−":"+")+vnd(Math.abs(n));
+const pct=(c,r)=>r?(c/r*100).toFixed(1).replace(".",",")+"%":"–";
+const pc=(c,r)=>!r?"":(c/r>1?"bad":"good");
+const cl=x=>x?`<td class="n">${vnd(x)}</td>`:`<td class="n z">–</td>`;
+const vndShort=n=>n>=1e6?(n/1e6).toFixed(n>=1e7?1:2).replace(".",",")+" tr":n?Math.round(n/1e3)+"k":"0";
+function parseSales(d){
+  const rows=d.duLieu, head=rows[0];
+  const blocks=[];head.forEach((h,i)=>{if(h&&h!=="TỔNG")blocks.push({name:h,col:i})});
+  const tot=rows[2]||[], ti=head.indexOf("TỔNG");
+  const prods=blocks.map(b=>{const days=rows.slice(3).map(r=>({d:(r[b.col]||"").slice(0,5),c:num(r[b.col+1]),r:num(r[b.col+2])})).filter(x=>x.d);
+    const c=days.reduce((a,x)=>a+x.c,0), r=days.reduce((a,x)=>a+x.r,0);return {name:b.name,days,c,r}});
+  const C=ti>=0?num(tot[ti]):prods.reduce((a,p)=>a+p.c,0), Rv=ti>=0?num(tot[ti+1]):prods.reduce((a,p)=>a+p.r,0);
+  return {file:d.tenFile,tab:d.tenTab,at:d.capNhat,prods,C,R:Rv};
+}
+const LABELS={"KRILL OIL":"EIKENBI","DẦU GỘI":"NINEMILA"};
+const ratio=(c,r)=>r?`<b class="ratio ${c/r>1?"bad":"ok"}">${(c/r*100).toFixed(1).replace(".",",")}%</b>`:`<b class="ratio">–</b>`;
+async function salesLogin(key){
+  salesErr="";
+  try{
+    if(!SALES_URL){ if(!key){salesErr="Nhập mật khẩu";return} salesData=parseSales(SALES_SNAPSHOT); }
+    else{ const res=await fetch(SALES_URL+"?key="+encodeURIComponent(key)); const j=await res.json(); if(!j.ok){salesErr="Sai mật khẩu";return} salesData=parseSales(j); try{sessionStorage.setItem("kigo-sales",key)}catch(e){} }
+  }catch(e){salesErr="Không kết nối được file báo cáo. Thử lại sau."}
+}
+function vSales(){
+  const head=`<section class="bandD bleed"><span class="ring" style="right:-60px;top:-140px;width:460px;height:560px"></span>
+    <div class="crumbs"><a href="#trang-chu">Trang chủ</a> / Doanh số chạy lẻ</div>
+    <span class="kicker" style="display:block;margin-top:20px">Chỉ Hào và team Sale · ${salesData?esc(salesData.tab):"Cần mật khẩu"}</span><h1>Doanh số chạy lẻ</h1>
+    <p>Chi phí quảng cáo và doanh thu theo ngày, đồng bộ từ file báo cáo của đối tác.</p>
+    ${salesData?`<div class="dstats sk"><div><b>${vnd(salesData.C)}</b><span>Tổng chi phí quảng cáo</span></div><div><b>${vnd(salesData.R)}</b><span>Tổng doanh thu</span></div><div><b class="${pc(salesData.C,salesData.R)}">${pct(salesData.C,salesData.R)}</b><span>Chi phí / doanh thu · dưới 100% là có lãi</span></div></div>`:`<div style="height:40px"></div>`}</section>`;
+  if(!salesData) return head+`<form class="gate" id="gate"><h3>Nhập mật khẩu</h3><p>Trang này chỉ dành cho Hào và team Sale.</p><input id="pw" type="password" autocomplete="current-password" placeholder="Mật khẩu" aria-label="Mật khẩu"><button type="submit">Xem doanh số</button><div class="err">${esc(salesErr)}</div></form>`;
+  const P=salesData.prods, C=salesData.C, Rv=salesData.R, dates=P[0].days.map(x=>x.d);
+  const cmp=`<div class="blockhead"><h2>So sánh theo brand</h2></div><table class="tasks stable"><thead><tr><th>Brand</th><th class="n">Chi phí</th><th class="n">Doanh thu</th><th class="n">Chênh lệch</th><th class="n">CP / DT</th></tr></thead><tbody>
+   ${P.map(p=>`<tr><td class="ch">${esc(LABELS[p.name]||p.name)}</td>${cl(p.c)}${cl(p.r)}<td class="n ${p.c||p.r?(p.r-p.c<0?"bad":"good"):"z"}">${p.c||p.r?sgn(p.r-p.c):"–"}</td><td class="n ${pc(p.c,p.r)}">${pct(p.c,p.r)}</td></tr>`).join("")}
+   <tr class="tot"><td>Tổng</td><td class="n">${vnd(C)}</td><td class="n">${vnd(Rv)}</td><td class="n ${Rv-C<0?"bad":"good"}">${sgn(Rv-C)}</td><td class="n ${pc(C,Rv)}">${pct(C,Rv)}</td></tr></tbody></table>`;
+  const groups=[...P.map(p=>({name:LABELS[p.name]||p.name,c:i=>p.days[i].c,r:i=>p.days[i].r,tc:p.c,tr:p.r})),{name:"TỔNG NGÀY",c:i=>P.reduce((a,p)=>a+p.days[i].c,0),r:i=>P.reduce((a,p)=>a+p.days[i].r,0),tc:C,tr:Rv,total:1}];
+  const daily=`<div class="blockhead"><h2>Chi tiết theo ngày</h2></div><div class="dwrap"><table class="dtable"><colgroup><col class="cd">${groups.map(g=>`<col span="3" class="${g.total?"gtot":""}">`).join("")}</colgroup>
+   <thead><tr class="gh"><th></th>${groups.map(g=>`<th colspan="3" class="gs${g.total?" gt":""}"><span>${esc(g.name)}</span></th>`).join("")}</tr>
+   <tr><th>Ngày</th>${groups.map(g=>`<th class="n gs">Chi phí</th><th class="n">Doanh thu</th><th class="n">CP / DT</th>`).join("")}</tr></thead><tbody>
+   ${dates.map((d,i)=>`<tr><td class="ch">${d}</td>${groups.map(g=>{const c=g.c(i),r=g.r(i);return `<td class="n gs${c?"":" z"}">${c?vnd(c):"–"}</td>${cl(r)}<td class="n ${pc(c,r)}">${pct(c,r)}</td>`}).join("")}</tr>`).join("")}
+   <tr class="tot"><td>Tổng</td>${groups.map(g=>`<td class="n gs">${vnd(g.tc)}</td><td class="n">${vnd(g.tr)}</td><td class="n ${pc(g.tc,g.tr)}">${pct(g.tc,g.tr)}</td>`).join("")}</tr></tbody></table></div>`;
+  return head+cmp+daily+`<p class="snote">Nguồn: file "${esc(salesData.file)}", tab ${esc(salesData.tab)}. ${SALES_URL?"Số liệu tải mới mỗi lần mở trang.":"Bản xem trước dùng số liệu chụp ngày 12/11/2026."} CP/DT dưới 100% là có lãi trên quảng cáo, trên 100% là chi phí cao hơn doanh thu.</p>`;
+}
+document.addEventListener("submit",async e=>{if(e.target.id!=="gate")return;e.preventDefault();await salesLogin($("#pw").value);route()});
+function vSearch(q){
+  const n=q.trim().toLowerCase(); const hl=s=>esc(s).replace(new RegExp("("+n.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+")","gi"),"<mark>$1</mark>");
+  const res=TASKS.filter(t=>[t.ch,t.t,t.s,...t.who.map(k=>PEOPLE[k].n)].join(" ").toLowerCase().includes(n));
+  return `<div class="pagehead"><span class="kicker">Tìm kiếm</span><h1>Kết quả cho “${esc(q)}”</h1><p>${res.length} việc phù hợp</p></div>
+  <div class="results">${res.map(t=>`<div class="r"><b>${hl(t.ch)}</b>${st(t)}<p>${hl(t.t)}</p><small>${t.who.map(k=>hl(PEOPLE[k].n)).join(", ")} · ${esc(plan(t.p).name)}</small></div>`).join("")||`<p class="empty">Không tìm thấy việc nào.</p>`}</div>`;
+}
+
+/* ===== ROUTER (bản thật dùng đường dẫn riêng: /nhan-su/phuong/, /ke-hoach/…) ===== */
+function route(){
+  const h=(location.hash||"#trang-chu").slice(1), q=$("#q").value.trim();
+  let html, nav=h;
+  if(q){html=vSearch(q);nav=""}
+  else if(PEOPLE[h]){html=vPerson(h);nav="phan-cong"}
+  else if(h==="phan-cong"||h==="nhan-su"){html=vBoard();nav="phan-cong"}
+  else if(h==="ke-hoach")html=vPlans();
+  else if(h==="bao-cao")html=vReport();
+  else if(h==="doanh-so")html=vSales();
+  else if(plan(h)&&plan(h).url){location.replace(plan(h).url);return}
+  else if(plan(h)){html=vPlan(h);nav="ke-hoach"}
+  else {html=vHome();nav="trang-chu"}
+  $("#view").innerHTML=html;document.body.classList.toggle("home",nav==="trang-chu");document.body.classList.toggle("sub",(!!PEOPLE[h]||nav==="phan-cong"||nav==="ke-hoach"||nav==="bao-cao"||nav==="doanh-so")&&!q);
+  document.querySelectorAll("#nav a").forEach(a=>{if(a.getAttribute("href")==="#"+nav)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
+}
+addEventListener("hashchange",()=>{$("#q").value="";pFilter="all";route();scrollTo(0,0)});
+let qt;$("#q").addEventListener("input",()=>{clearTimeout(qt);qt=setTimeout(route,150)});
+document.addEventListener("click",e=>{const w=e.target.closest("[data-wk]");if(w){rWk=w.dataset.wk;route();return}const b=e.target.closest("[data-pf]");if(b){pFilter=b.dataset.pf;route()}const c=e.target.closest("[data-bf]");if(c){bFilter=c.dataset.bf;route()}});
+route();
+
+/* ===== ĐỌC DỮ LIỆU TỪ GOOGLE SHEETS (config.js) ===== */
+const CFG=window.CONFIG||{};
+const sheetId=u=>{const m=/\/d\/([a-zA-Z0-9_-]+)/.exec(u||"");return m?m[1]:""};
+function csv(t){const rows=[];let r=[],f="",q=false;for(let i=0;i<t.length;i++){const c=t[i];if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}else if(c==='"')q=true;else if(c===","){r.push(f);f=""}else if(c==="\n"){r.push(f);rows.push(r);r=[];f=""}else if(c!=="\r")f+=c}if(f||r.length){r.push(f);rows.push(r)}return rows}
+async function tab(id,name,need){const res=await fetch(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&headers=1&sheet=${encodeURIComponent(name)}`,{cache:"no-store"});if(!res.ok)throw new Error(name);const rows=csv(await res.text());const h=(rows.shift()||[]).map(x=>x.trim());if(need&&!need.every(n=>h.some(k=>k.toLowerCase().startsWith(n.toLowerCase()))))throw new Error("missing "+name);return rows.filter(r=>r.some(c=>c.trim())).map(r=>Object.fromEntries(h.map((k,i)=>[k,(r[i]||"").trim()])))}
+const col=(o,...names)=>{for(const n of names){const k=Object.keys(o).find(k=>k.toLowerCase().startsWith(n.toLowerCase()));if(k&&o[k]!=null)return o[k]}return ""};
+const ST_MAP={"có hạn":"due","đang chạy":"run","tạm hoãn":"hold","hoàn thành":"done","đã đăng":"done","chưa làm":"run"};
+const links=t=>String(t||"").split(/[\n\s]+/).filter(x=>/^https?:\/\//.test(x));
+async function loadAll(){
+  const id=sheetId(CFG.sheetUrl); if(!id)return;
+  try{
+    const [dm,ns]=await Promise.all([tab(id,"Danh mục",["Mã","Tên kế hoạch"]),tab(id,"Nhân sự",["Mã","Tên hiển thị"])]);
+    const people={},byName={};
+    ns.forEach(r=>{const k=col(r,"Mã")||col(r,"Tên");const n=col(r,"Tên hiển thị")||k;if(!k||/không hiện/i.test(col(r,"Ghi chú")))return;people[k]={n,i:n.split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase(),role:col(r,"Vai trò")};byName[n.toLowerCase()]=k});
+    ns.forEach(r=>{const n=(col(r,"Tên hiển thị")||"").toLowerCase();if(n&&!byName[n])byName[n]=col(r,"Mã")});
+    const who=t=>String(t||"").split(/[,;]/).map(x=>x.replace(/\(.*?\)/g,"").trim().toLowerCase()).filter(Boolean).map(n=>byName[n]||Object.keys(byName).find(b=>n.startsWith(b))&&byName[Object.keys(byName).find(b=>n.startsWith(b))]||n);
+    const plans=[],tasks=[],weeks=[];
+    for(const r of dm.filter(r=>!/^không$/i.test(col(r,"Hiển thị")))){
+      const p={id:col(r,"Mã"),name:col(r,"Tên kế hoạch"),brand:col(r,"Brand"),owner:col(r,"Phụ trách"),style:/ninemila/i.test(col(r,"Giao diện"))?"ninemila":"kigo",phase:col(r,"Thời gian"),desc:col(r,"Mô tả"),url:col(r,"Link trang riêng"),slide:col(r,"Link slide")};
+      plans.push(p); const src=col(r,"Nguồn dữ liệu");
+      const tm=/^tab:\s*(.+)$/i.exec(src), ext=sheetId(src);
+      const readTasks=async(fid,name)=>(await tab(fid,name,["Việc","Phụ trách"])).forEach(t=>{const st=ST_MAP[col(t,"Tình trạng").toLowerCase()]||"run";const tg=+col(t,"Chỉ tiêu (số)")||0,dn=col(t,"Đã làm");
+        tasks.push({p:p.id,ch:col(t,"Kênh"),t:col(t,"Việc"),s:col(t,"Mô tả thêm"),who:who(col(t,"Phụ trách")),st,due:col(t,"Hạn"),goal:dn!==""&&tg?dn+"/"+tg:col(t,"Chỉ tiêu"),n:col(t,"Ghi chú"),links:links(col(t,"Link bài"))})});
+      try{ if(tm) await readTasks(id,tm[1].trim()); else if(ext) await readTasks(ext,"Việc"); }catch(e){}
+      if(ext){ try{ const posts=await tab(ext,"Bài đăng",["Ngày","Link bài đã đăng"]); const k=who(p.owner)[0]; const g={};
+        posts.forEach(x=>{const d=dd(col(x,"Ngày"));if(!d)return;const wk=wkKey(monday(d));const o=g[wk]=g[wk]||{wk,id:p.id,ch:"Fanpage "+(p.brand||p.name),who:k,target:0,done:0,links:[],src:"Sheet "+(p.brand||p.name)};o.target++;const L=links(col(x,"Link bài đã đăng"));if(L.length||/đã đăng/i.test(col(x,"Tình trạng")))o.done++;o.links.push(...L)});
+        weeks.push(...Object.values(g)); p.count=posts.length; }catch(e){} }
+    }
+    try{ (await tab(id,"Tiến độ tuần",["Tuần","Đã đăng"])).forEach(w=>{const d=dd(col(w,"Tuần"));if(!d)return;weeks.push({wk:wkKey(monday(d)),id:col(w,"Mã việc"),ch:col(w,"Kênh"),who:who(col(w,"Phụ trách"))[0],target:+col(w,"Chỉ tiêu")||0,done:col(w,"Đã đăng")===""?0:+col(w,"Đã đăng")||0,links:links(col(w,"Link bài")),n:/^VÍ DỤ/i.test(col(w,"Ghi chú"))?"":col(w,"Ghi chú")})}) }catch(e){}
+    PEOPLE=people; PLANS=plans; TASKS=tasks; WEEKS=weeks; DEMO=false;
+    const now=new Date(); SOURCE_NOTE="Dữ liệu cập nhật lúc "+String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0")+" "+fmtD(now)+"/"+now.getFullYear();
+    const u=document.getElementById("upd"); if(u)u.textContent=SOURCE_NOTE;
+    route();
+  }catch(e){ SOURCE_NOTE="Chưa đọc được Google Sheets, đang hiện dữ liệu demo"; route(); }
+}
+loadAll();
+</script>
+</body>
+</html>
