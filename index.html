@@ -460,7 +460,7 @@ function vHome(){
 /* ===== KẾ HOẠCH & BÁO CÁO ===== */
 function planCard(p){
   const href=p.page||p.plan||"", btn=(u,l)=>u?`<a class="lk" href="${esc(u)}" target="_blank" rel="noopener">${l} ↗</a>`:"";
-  return `<div class="plan${p.style==="ninemila"?" nm":""}"><span class="kicker">${esc(p.brand)} · ${esc(p.phase)}</span>
+  return `<div class="plan${p.style==="ninemila"?" nm":""}"><span class="kicker">${esc([p.brand,p.phase].filter(Boolean).join(" · "))}</span>
     <h3>${href?`<a href="${esc(href)}" target="_blank" rel="noopener">${esc(p.name)}</a>`:esc(p.name)}</h3><p>${esc(p.goal)}</p>
     <div class="plinks">${btn(p.plan,"Plan")}${btn(p.report,"Báo cáo")}${btn(p.page,"Trang riêng")}${!p.plan&&!p.report&&!p.page?`<span class="z">Chưa có link plan / báo cáo</span>`:""}</div>
     <div class="meta"><div><b>${esc(p.owner)}</b>phụ trách</div>${p.status?`<div><b class="stx">${esc(p.status)}</b>tình trạng</div>`:""}</div></div>`;
