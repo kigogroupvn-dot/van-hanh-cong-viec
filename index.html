@@ -310,7 +310,7 @@ footer .wrap{border-top:1px solid var(--rule);padding-block:28px 40px;font-size:
 .atable td b.tt{font-weight:600;color:var(--text)}.atable td.due{white-space:nowrap}.atable small.dsub{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
 .badge{display:inline-block;font-family:var(--f-head);font-weight:700;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;border-radius:4px;padding:3px 8px;margin-bottom:6px}
 .b-doing{background:var(--misty);color:var(--crimson)}.b-done{background:#E3F1E4;color:#276B35}.b-huy{background:#EEE;color:var(--muted);text-decoration:line-through}
-.atable td.stxt .upd{display:block}
+.atable td.stxt .upd{display:block;white-space:pre-line}
 .atable td.stxt{font-size:14.5px}.atable tr.late td.due .st{color:var(--crimson)}.atable tr.isdone td{opacity:.65}
 .wtable,.atable{table-layout:fixed}.wtable .c-ch{width:30%}.wtable .c-goal{width:24%}.wtable .c-day{width:10%}.wtable .c-bar{width:22%}.wtable .c-num{width:12%}.wtable .c-who,.atable .c-who{width:13%}
 .atable .c-task{width:38%}.atable .c-due{width:15%}.atable .c-st{width:22%}.atable .c-res{width:12%}
@@ -496,7 +496,7 @@ function vReport(){
 }
 
 /* ===== TASK PHÁT SINH ===== */
-let aFilter="open", aWho="all";
+let aFilter="all", aWho="all";
 function adhocTable(list,showWho=true){
   if(!list.length)return `<p class="empty">Không có task nào.</p>`;
   return `<table class="tasks atable"><thead><tr><th class="c-task">Việc</th>${showWho?`<th class="c-who">Người làm</th>`:""}<th class="c-due">Hạn</th><th class="c-st">Trạng thái · cập nhật</th><th class="c-res">Kết quả</th></tr></thead><tbody>${list.map(t=>`<tr class="${isLate(t)?"late":""}${isOpen(t)?"":" isdone"}">
@@ -513,9 +513,10 @@ function vAdhoc(){
   const list=sortAdhoc(base.filter(f));
   return band(" / Task phát sinh","Khối Marketing","Task phát sinh","Việc làm một lần hoặc chạy dài theo hạn. Nhân viên chọn Trạng thái (Doing · Done · Hủy), ghi Cập nhật tình hình, Link kết quả, Vướng mắc và Ngày xong.",
       [[ADHOC.filter(isOpen).length,"đang làm"],[ADHOC.filter(isLate).length,"trễ hạn"],[ADHOC.filter(isSoon).length,"đến hạn trong 7 ngày"],[ADHOC.filter(isDone).length,"done (7 ngày qua)"]])
-  +`<div class="filters" role="group" aria-label="Lọc tình trạng">${[["open","Doing"],["late","Trễ hạn"],["done","Done"],["huy","Hủy"],["all","Tất cả"]].map(([v,l])=>`<button type="button" class="chip" data-af="${v}" aria-pressed="${aFilter===v}">${l}</button>`).join("")}</div>
+  +`<div class="filters" role="group" aria-label="Lọc tình trạng">${[["all","Tất cả"],["open","Doing"],["late","Trễ hạn"],["done","Done"],["huy","Hủy"]].map(([v,l])=>`<button type="button" class="chip" data-af="${v}" aria-pressed="${aFilter===v}">${l}</button>`).join("")}</div>
    <div class="filters" role="group" aria-label="Lọc người làm" style="margin-top:8px">${[["all","Mọi người"],...Object.keys(PEOPLE).map(k=>[k,PEOPLE[k].n]),...(ADHOC.some(t=>t.who.includes("hao"))?[["hao",nm("hao")]]:[])].map(([v,l])=>`<button type="button" class="chip sm" data-aw="${v}" aria-pressed="${aWho===v}">${esc(l)}</button>`).join("")}</div>
-   ${adhocTable(list)}
+   ${aFilter==="all"?`<div class="blockhead"><h2>Đang làm</h2><span class="wklab">${list.filter(isOpen).length} task</span></div>${adhocTable(list.filter(isOpen))}
+     <div class="blockhead"><h2>Đã xong · Hủy</h2><span class="wklab">${list.filter(t=>!isOpen(t)).length} task · Done tự ẩn sau 7 ngày</span></div>${adhocTable(list.filter(t=>!isOpen(t)))}`:adhocTable(list)}
    <p class="snote">Task Done tự ẩn 7 ngày sau Ngày xong. Dữ liệu vẫn còn trong Sheets.</p>`;
 }
 
