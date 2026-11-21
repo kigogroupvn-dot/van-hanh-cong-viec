@@ -415,7 +415,8 @@ function stat(d,wk=CUR_WK){
   const target=d.target?(d.per==="ngày"?d.target*7:d.target):0;
   const passed=cur?dayIdx()+1:7;
   const exp=!target?0:(d.per==="ngày"?d.target*passed:Math.floor(d.target*passed/7));
-  return {done:L.length,target,exp,today:L.filter(l=>+l.d===+TODAY).length,links:L.flatMap(l=>l.links),notes:L.filter(l=>l.n).map(l=>fmtD(l.d)+": "+l.n),behind:exp>0&&L.length<exp};
+  const cnt=a=>a.reduce((n,l)=>n+Math.max(1,l.links.length),0), done=cnt(L);
+  return {done,target,exp,today:cnt(L.filter(l=>+l.d===+TODAY)),links:L.flatMap(l=>l.links),notes:L.filter(l=>l.n).map(l=>fmtD(l.d)+": "+l.n),behind:exp>0&&done<exp};
 }
 const goalTxt=d=>d.cal?"Theo lịch content":d.target?`${d.target} bài/${d.per}`:"Không đặt chỉ tiêu";
 function wkSum(list,wk=CUR_WK){return list.reduce((a,d)=>{const s=stat(d,wk);a.d+=s.done;a.t+=s.target;return a},{d:0,t:0})}
@@ -440,7 +441,7 @@ const loadingNote=()=>LOADED?"":`<p class="snote">${esc(SOURCE_NOTE)}</p>`;
 function vHome(){
   const lateT=ADHOC.filter(isLate).sort((a,b)=>a.dueD-b.dueD), soonT=ADHOC.filter(isSoon).sort((a,b)=>a.dueD-b.dueD);
   const slow=DAILY.map(d=>({d,s:stat(d)})).filter(x=>x.s.behind), nts=notes();
-  const open=ADHOC.filter(isOpen), ws=wkSum(DAILY), todayN=LOG.filter(l=>+l.d===+TODAY).length;
+  const open=ADHOC.filter(isOpen), ws=wkSum(DAILY), todayN=LOG.filter(l=>+l.d===+TODAY).reduce((n,l)=>n+Math.max(1,l.links.length),0);
   const attn=(grp("a-late","Task phát sinh · trễ hạn",lateT.length,lateT.map(t=>`<div class="arow"><div><b>${esc(t.t)}</b><span>${esc(ppl(t.who))}${t.ch?" · "+esc(t.ch):""}</span></div><div class="aright"><strong>Trễ ${-daysTo(t.dueD)} ngày</strong><small>Hạn ${fmtD(t.dueD)}</small></div></div>`).join(""))
     +grp("a-soon","Task phát sinh · sắp đến hạn (7 ngày)",soonT.length,soonT.map(t=>`<div class="arow"><div><b>${esc(t.t)}</b><span>${esc(ppl(t.who))}${t.ch?" · "+esc(t.ch):""}</span></div><div class="aright"><strong>${daysTo(t.dueD)?"Còn "+daysTo(t.dueD)+" ngày":"Hôm nay"}</strong><small>Hạn ${fmtD(t.dueD)}</small></div></div>`).join(""))
     +grp("a-slow",`Task daily · chậm tiến độ tuần ${wkRange(CUR_WK)}`,slow.length,`<p class="anote">Số bài đã đăng so với số bài lẽ ra phải xong tính đến hôm nay.</p>`+slow.map(({d,s})=>`<div class="arow"><div><b>${esc(d.ch)}</b><span>${esc(nm(d.who))} · ${esc(goalTxt(d))}</span></div><div class="aright"><strong>${s.done} / ${s.exp} bài</strong><small>Cả tuần ${s.target} bài</small></div></div>`).join(""))
@@ -543,7 +544,7 @@ function logList(list){
 }
 function vDaily(){
   const wks=WEEKS(), wk=dWk&&wks.includes(dWk)?dWk:CUR_WK, ws=wkSum(DAILY,wk);
-  const slow=DAILY.filter(d=>stat(d,wk).behind).length, todayN=LOG.filter(l=>+l.d===+TODAY).length;
+  const slow=DAILY.filter(d=>stat(d,wk).behind).length, todayN=LOG.filter(l=>+l.d===+TODAY).reduce((n,l)=>n+Math.max(1,l.links.length),0);
   const keys=[...new Set(DAILY.map(d=>d.who))];
   const recent=LOG.filter(l=>wkKey(monday(l.d))===wk).sort((a,b)=>b.d-a.d||b.row-a.row);
   return band(" / Task daily","Khối Marketing","Task daily","Việc đăng bài định kỳ. Mỗi lần đăng bài, nhân viên thêm 1 dòng vào tab Nhật ký đăng bài; web tự đếm theo ngày và tuần.",
