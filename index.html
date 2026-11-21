@@ -316,6 +316,7 @@ footer .wrap{border-top:1px solid var(--rule);padding-block:28px 40px;font-size:
 .atable .c-task{width:38%}.atable .c-due{width:15%}.atable .c-st{width:22%}.atable .c-res{width:12%}
 .tasks td.ch small{font-family:var(--f-body);font-weight:400;font-size:13px;white-space:normal}.tasks td.ch{white-space:normal}
 .wtable td.goal{font-size:14px;white-space:nowrap}.wtable td.goal small{white-space:normal}
+.wtable small.pct{font-weight:600;color:var(--velvet);margin-top:4px}.wtable small.pct.bad{color:var(--crimson)}
 .tasks td.fig.bad{color:var(--crimson)}.tasks td.n{text-align:right;padding-right:16px}
 .blockhead h2 .num{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--crimson);color:var(--white);font-family:var(--f-head);font-size:15px;font-weight:900;margin-right:12px;vertical-align:4px}
 .rlist em.warn{font-style:normal;color:var(--crimson);font-weight:600}
@@ -530,7 +531,7 @@ function dailyTable(list,wk,showWho=true){
     ${showWho?`<td>${PEOPLE[d.who]?`<a href="#${d.who}">${esc(nm(d.who))}</a>`:esc(nm(d.who))}</td>`:""}
     <td class="goal">${esc(goalTxt(d))}${d.note?`<small>${esc(d.note)}</small>`:""}</td>
     ${cur?`<td class="n fig">${s.today}${d.per==="ngày"&&d.target?"/"+d.target:""}</td>`:""}
-    <td>${s.target?pbar(s.done,s.target):`<span class="z">Đếm số bài</span>`}${cur&&s.exp?`<small>Đến hôm nay cần ${s.exp} bài</small>`:""}</td>
+    <td>${s.target?pbar(s.done,s.target):`<span class="z">Đếm số bài</span>`}${s.target?`<small class="pct${s.behind?" bad":""}">${Math.round(s.done/s.target*100)}% hoàn thành</small>`:""}</td>
     <td class="n fig ${s.behind?"bad":""}">${s.done}${s.target?"/"+s.target:""}</td></tr>`}).join("")}</tbody></table>`;
 }
 function logList(list){
