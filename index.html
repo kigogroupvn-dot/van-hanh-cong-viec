@@ -312,7 +312,8 @@ footer .wrap{border-top:1px solid var(--rule);padding-block:28px 40px;font-size:
 .b-doing{background:var(--misty);color:var(--crimson)}.b-done{background:#E3F1E4;color:#276B35}.b-huy{background:#EEE;color:var(--muted);text-decoration:line-through}
 .atable td.stxt .upd{display:block;white-space:pre-line}
 .atable td.stxt{font-size:14.5px}.atable tr.late td.due .st{color:var(--crimson)}.atable tr.isdone td{opacity:.65}
-.wtable,.atable{table-layout:fixed}.wtable .c-ch{width:30%}.wtable .c-goal{width:24%}.wtable .c-day{width:10%}.wtable .c-bar{width:22%}.wtable .c-num{width:12%}.wtable .c-who,.atable .c-who{width:13%}
+.wtable,.atable{table-layout:fixed}.wtable .c-ch{width:22%}.wtable .c-goal{width:17%}.wtable .c-day{width:8%}.wtable .c-bar{width:17%}.wtable .c-num{width:9%}.wtable .c-note{width:27%}
+.wtable td.pnote{font-size:14px;white-space:pre-line}.wtable td.pnote small{display:block;margin-top:4px}.wtable .c-who,.atable .c-who{width:13%}
 .atable .c-task{width:38%}.atable .c-due{width:15%}.atable .c-st{width:22%}.atable .c-res{width:12%}
 .tasks td.ch small{font-family:var(--f-body);font-weight:400;font-size:13px;white-space:normal}.tasks td.ch{white-space:normal}
 .wtable td.goal{font-size:14px;white-space:nowrap}.wtable td.goal small{white-space:normal}
@@ -414,7 +415,7 @@ function stat(d,wk=CUR_WK){
   const target=d.target?(d.per==="ngày"?d.target*7:d.target):0;
   const passed=cur?dayIdx()+1:7;
   const exp=!target?0:(d.per==="ngày"?d.target*passed:Math.floor(d.target*passed/7));
-  return {done:L.length,target,exp,today:L.filter(l=>+l.d===+TODAY).length,links:L.flatMap(l=>l.links),behind:exp>0&&L.length<exp};
+  return {done:L.length,target,exp,today:L.filter(l=>+l.d===+TODAY).length,links:L.flatMap(l=>l.links),notes:L.filter(l=>l.n).map(l=>fmtD(l.d)+": "+l.n),behind:exp>0&&L.length<exp};
 }
 const goalTxt=d=>d.cal?"Theo lịch content":d.target?`${d.target} bài/${d.per}`:"Không đặt chỉ tiêu";
 function wkSum(list,wk=CUR_WK){return list.reduce((a,d)=>{const s=stat(d,wk);a.d+=s.done;a.t+=s.target;return a},{d:0,t:0})}
@@ -423,6 +424,7 @@ const WEEKS=()=>{const s=new Set([CUR_WK]);LOG.forEach(l=>s.add(wkKey(monday(l.d
 /* --- Vướng mắc --- */
 function notes(wk=CUR_WK){
   return [...ADHOC.filter(t=>t.n&&isOpen(t)).map(t=>({n:t.n,what:t.t,who:t.who,kind:"Task phát sinh"})),
+          ...(wk===CUR_WK?DAILY.filter(d=>d.pnote).map(d=>({n:d.pnote,what:d.ch,who:[d.who],kind:"Task daily"})):[]),
           ...LOG.filter(l=>l.n&&wkKey(monday(l.d))===wk).map(l=>({n:l.n,what:l.ch+" · "+fmtD(l.d),who:[l.who],kind:"Task daily"}))];
 }
 
@@ -526,13 +528,14 @@ let dWk=null;
 function dailyTable(list,wk,showWho=true){
   if(!list.length)return `<p class="empty">Không có task daily.</p>`;
   const cur=wk===CUR_WK;
-  return `<table class="tasks wtable"><thead><tr><th class="c-ch">Kênh</th>${showWho?`<th class="c-who">Người làm</th>`:""}<th class="c-goal">Chỉ tiêu</th>${cur?`<th class="n c-day">Hôm nay</th>`:""}<th class="c-bar">Tuần ${wkRange(wk)}</th><th class="n c-num">Đã đăng</th></tr></thead><tbody>${list.map(d=>{const s=stat(d,wk);return `<tr>
+  return `<table class="tasks wtable"><thead><tr><th class="c-ch">Kênh</th>${showWho?`<th class="c-who">Người làm</th>`:""}<th class="c-goal">Chỉ tiêu</th>${cur?`<th class="n c-day">Hôm nay</th>`:""}<th class="c-bar">Tuần ${wkRange(wk)}</th><th class="n c-num">Đã đăng</th><th class="c-note">Ghi chú tiến độ</th></tr></thead><tbody>${list.map(d=>{const s=stat(d,wk);return `<tr>
     <td class="ch">${esc(d.ch)}<small>${esc(d.t)}</small>${d.cal?`<small>Tự lấy từ lịch content${s.dates&&s.dates.length?" · ngày đăng: "+s.dates.join(", "):""}</small>`:""}</td>
     ${showWho?`<td>${PEOPLE[d.who]?`<a href="#${d.who}">${esc(nm(d.who))}</a>`:esc(nm(d.who))}</td>`:""}
     <td class="goal">${esc(goalTxt(d))}${d.note?`<small>${esc(d.note)}</small>`:""}</td>
     ${cur?`<td class="n fig">${s.today}${d.per==="ngày"&&d.target?"/"+d.target:""}</td>`:""}
     <td>${s.target?pbar(s.done,s.target):`<span class="z">Đếm số bài</span>`}${s.target?`<small class="pct${s.behind?" bad":""}">${Math.round(s.done/s.target*100)}% hoàn thành</small>`:""}</td>
-    <td class="n fig ${s.behind?"bad":""}">${s.done}${s.target?"/"+s.target:""}</td></tr>`}).join("")}</tbody></table>`;
+    <td class="n fig ${s.behind?"bad":""}">${s.done}${s.target?"/"+s.target:""}</td>
+    <td class="pnote">${cur&&d.pnote?`<span>${esc(d.pnote)}</span>`:""}${s.notes&&s.notes.length?s.notes.map(n=>`<small>${esc(n)}</small>`).join(""):""}${!(cur&&d.pnote)&&!(s.notes&&s.notes.length)?(s.behind?`<span class="z">Chưa ghi lý do chậm</span>`:`<span class="z">–</span>`):""}</td></tr>`}).join("")}</tbody></table>`;
 }
 function logList(list){
   if(!list.length)return `<p class="empty">Chưa có bài nào được ghi vào Nhật ký.</p>`;
@@ -669,7 +672,7 @@ async function loadAll(){
     ADHOC=ADHOC_ALL.filter(t=>!(t.state==="done"&&t.doneAt&&TODAY-t.doneAt>7*DAY));
     DAILY=td.filter(r=>col(r,"Kênh")&&col(r,"Người làm")).map(r=>{const k=who(col(r,"Người làm"))[0],src=col(r,"Nguồn số liệu");
       const cp=/lịch/i.test(src)?(Object.keys(cal).find(id=>cal[id].who===k)||Object.keys(cal)[0]):null;
-      return {id:col(r,"Mã"),ch:col(r,"Kênh"),t:col(r,"Việc"),brand:col(r,"Brand"),who:k,target:+String(col(r,"Chỉ tiêu")).replace(",",".")||0,per:/ngày/i.test(col(r,"Theo"))?"ngày":"tuần",cal:cp,note:col(r,"Ghi chú")}});
+      return {id:col(r,"Mã"),ch:col(r,"Kênh"),t:col(r,"Việc"),brand:col(r,"Brand"),who:k,target:+String(col(r,"Chỉ tiêu")).replace(",",".")||0,per:/ngày/i.test(col(r,"Theo"))?"ngày":"tuần",cal:cp,note:col(r,"Ghi chú"),pnote:col(r,"Ghi chú tiến độ")}});
     LOG=nk.map(r=>({d:dd(col(r,"Ngày")),who:one(col(r,"Người đăng")),ch:col(r,"Kênh"),links:links(col(r,"Link bài")),n:col(r,"Ghi chú"),row:r._row})).filter(l=>l.d&&l.who);
     CAL=cal; PEOPLE=people; LOADED=true;
     const now=new Date(); SOURCE_NOTE="Dữ liệu cập nhật lúc "+String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0")+" "+fmtD(now)+"/"+now.getFullYear();
