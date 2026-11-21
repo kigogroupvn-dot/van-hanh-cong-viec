@@ -501,10 +501,11 @@ function weekReport(wk){
     <h3 class="rh">Trễ hạn</h3><ul class="rlist">${lateT.map(t=>`<li><b>${esc(t.t)}</b><span>Hạn ${fmtD(t.dueD)} · ${esc(ppl(t.who))}</span></li>`).join("")||"<li><span>Không có</span></li>"}</ul>
     <h3 class="rh">Vướng mắc</h3><ul class="rlist">${nts.map(x=>`<li><b>${esc(x.n)}</b><span>${esc(x.kind)} · ${esc(x.what)} · ${esc(ppl(x.who))}</span></li>`).join("")||"<li><span>Không có</span></li>"}</ul></div></div></section>`;
 }
+const REPORT_FROM=new Date(2026,10,16); /* tuần bắt đầu ghi Nhật ký; tuần trước mốc này không hiện */
 function vReport(){
   const prev=new Date(dd(CUR_WK));prev.setDate(prev.getDate()-7);
-  return band(" / Báo cáo tuần","Khối Marketing","Báo cáo tuần","Tự tổng hợp từ file Sheets, hiện 2 tuần gần nhất. Update chậm nhất 10h sáng thứ 2.")
-    +weekReport(CUR_WK)+weekReport(wkKey(prev));
+  return band(" / Báo cáo tuần","Khối Marketing","Báo cáo tuần","Tự tổng hợp từ file Sheets, hiện 2 tuần gần nhất (tuần này ở trên). Update chậm nhất 10h sáng thứ 2.")
+    +weekReport(CUR_WK)+(prev>=REPORT_FROM?weekReport(wkKey(prev)):"");
 }
 
 /* ===== TASK PHÁT SINH ===== */
