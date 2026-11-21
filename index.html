@@ -81,7 +81,7 @@ body.home::before{background:transparent}
 .bandE small{display:block;margin-top:14px;font-size:13px;color:var(--muted)}
 /* D — sub-page header band */
 .bandD{color:var(--white);padding-block:28px 0;margin-bottom:40px}
-.bandD::before{background:var(--crimson);bottom:56px}
+.bandD::before{background:var(--crimson);bottom:56px}.bandD.nostat{padding-bottom:40px}.bandD.nostat::before{bottom:0}
 .bandD .ring{position:absolute;border:1.5px solid rgba(255,255,255,.16);border-radius:50%;pointer-events:none;z-index:-1}
 .bandD .crumbs{color:var(--misty)}.bandD .crumbs a:hover{color:var(--white)}
 .bandD .kicker{color:var(--flamingo)}
@@ -313,6 +313,11 @@ footer .wrap{border-top:1px solid var(--rule);padding-block:28px 40px;font-size:
 .atable td.stxt .upd{display:block;white-space:pre-line}
 .atable td.stxt{font-size:14.5px}.atable tr.late td.due .st{color:var(--crimson)}.atable tr.isdone td{opacity:.65}
 .wtable,.atable{table-layout:fixed}.wtable .c-ch{width:22%}.wtable .c-goal{width:17%}.wtable .c-day{width:8%}.wtable .c-bar{width:17%}.wtable .c-num{width:9%}.wtable .c-note{width:27%}
+.wkrep{margin-top:56px;padding-top:4px}.wkrep+.wkrep{border-top:1px dashed var(--rule);padding-top:40px}
+.wkhead{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:18px 32px;border-bottom:1.5px solid var(--velvet);padding-bottom:16px}
+.wkhead h2{font-size:30px;margin-top:6px}.wknums{display:flex;flex-wrap:wrap;gap:8px 28px}.wknums div{min-width:90px}
+.wknums b{display:block;font-family:var(--f-head);font-weight:900;font-size:26px;color:var(--crimson);line-height:1.1}.wknums span{font-size:12.5px;color:var(--muted)}
+.rh{font-family:var(--f-title);font-size:21px;color:var(--velvet);margin:28px 0 10px}.rlist.short{max-height:420px;overflow:auto}
 .wtable td.pnote{font-size:14px;white-space:pre-line}.wtable td.pnote small{display:block;margin-top:4px}.wtable .c-who,.atable .c-who{width:13%}
 .atable .c-task{width:38%}.atable .c-due{width:15%}.atable .c-st{width:22%}.atable .c-res{width:12%}
 .tasks td.ch small{font-family:var(--f-body);font-weight:400;font-size:13px;white-space:normal}.tasks td.ch{white-space:normal}
@@ -347,7 +352,7 @@ footer .wrap{border-top:1px solid var(--rule);padding-block:28px 40px;font-size:
 <header class="top"><div class="wrap">
   <a href="#trang-chu" aria-label="Trang chủ"><svg class="logo" viewBox="0 0 506 214"><use href="#logo"/></svg></a>
   <nav id="nav" aria-label="Điều hướng">
-    <a href="#trang-chu">Tổng quan</a><a href="#ke-hoach">Kế hoạch & Báo cáo</a><a href="#task-phat-sinh">Task phát sinh</a><a href="#task-daily">Task daily</a><a href="#doanh-so">Doanh số 🔒</a>
+    <a href="#trang-chu">Tổng quan</a><a href="#ke-hoach">Kế hoạch</a><a href="#bao-cao">Báo cáo tuần</a><a href="#task-phat-sinh">Task phát sinh</a><a href="#task-daily">Task daily</a><a href="#doanh-so">Doanh số 🔒</a>
   </nav>
   <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="q" type="search" placeholder="Tìm task, kênh, người…" aria-label="Tìm kiếm"></label>
 </div></header>
@@ -431,7 +436,7 @@ function notes(wk=CUR_WK){
 }
 
 /* ===== KHUNG TRANG ===== */
-const band=(crumbs,kicker,title,sub,stats)=>`<section class="bandD bleed"><span class="ring" style="right:-60px;top:-140px;width:460px;height:560px"></span><span class="ring" style="right:40px;top:-60px;width:300px;height:380px"></span>
+const band=(crumbs,kicker,title,sub,stats)=>`<section class="bandD bleed${stats?"":" nostat"}"><span class="ring" style="right:-60px;top:-140px;width:460px;height:560px"></span><span class="ring" style="right:40px;top:-60px;width:300px;height:380px"></span>
   <div class="crumbs"><a href="#trang-chu">Trang chủ</a>${crumbs}</div>
   <span class="kicker" style="display:block;margin-top:20px">${kicker}</span><h1>${title}</h1>${sub?`<p>${sub}</p>`:""}
   ${stats?`<div class="dstats">${stats.map(([b,s])=>`<div><b>${b}</b><span>${s}</span></div>`).join("")}</div>`:""}</section>`;
@@ -459,7 +464,7 @@ function vHome(){
       <a href="#task-daily"><b>${todayN}</b><span>bài đăng hôm nay</span></a></div><small>${esc(SOURCE_NOTE)}.</small></section>
     <div class="two"><div><div class="blockhead"><h2>Cần chú ý</h2></div><div class="attn">${attn}</div></div>
     <div><div class="blockhead"><h2>Nhân sự</h2></div><div class="people">${people}</div></div></div>
-    <div class="blockhead"><h2>Kế hoạch</h2><a href="#ke-hoach">Kế hoạch & Báo cáo →</a></div><div class="plans">${PLANS.map(planCard).join("")}</div>`;
+    <div class="blockhead"><h2>Kế hoạch</h2><a href="#ke-hoach">Tất cả kế hoạch →</a></div><div class="plans">${PLANS.map(planCard).join("")}</div>`;
 }
 
 /* ===== KẾ HOẠCH & BÁO CÁO ===== */
@@ -473,31 +478,33 @@ function planCard(p){
 let bFilter="all";
 function vPlans(){
   const list=PLANS.filter(p=>bFilter==="all"||p.brand.includes(bFilter));
-  return band(" / Kế hoạch & Báo cáo","Khối Marketing","Kế hoạch & Báo cáo","Mỗi kế hoạch có link plan và link báo cáo. Báo cáo tuần tự tổng hợp từ Task daily và Task phát sinh.",
-      [[PLANS.length,"kế hoạch"],[PLANS.filter(p=>p.report).length,"đã có báo cáo"],[`<a href="#bao-cao">Xem →</a>`,"báo cáo tuần"]])
+  return band(" / Kế hoạch","Khối Marketing","Kế hoạch","Mỗi kế hoạch có link plan và link báo cáo riêng.",
+      [[PLANS.length,"kế hoạch"],[PLANS.filter(p=>p.plan).length,"đã có link plan"],[PLANS.filter(p=>p.report).length,"đã có link báo cáo"]])
    +`<div class="filters" role="group" aria-label="Lọc theo brand">${["all","Kigo","Ninemila"].map(b=>`<button type="button" class="chip" data-bf="${b}" aria-pressed="${bFilter===b}">${b==="all"?"Tất cả brand":b}</button>`).join("")}</div>
-   <div class="plans" style="margin-top:18px">${list.map(planCard).join("")||`<p class="empty">Chưa có kế hoạch nào.</p>`}</div>
-   <div class="blockhead"><h2>Báo cáo tuần</h2><a href="#bao-cao">Mở báo cáo tuần →</a></div>
-   <p class="snote">Tổng hợp bài đăng theo kênh, task phát sinh đã xong, trễ hạn và vướng mắc của từng tuần. Update chậm nhất 10h sáng thứ 2.</p>`;
+   <div class="plans" style="margin-top:18px">${list.map(planCard).join("")||`<p class="empty">Chưa có kế hoạch nào.</p>`}</div>`;
 }
 let rWk=null;
-function vReport(){
-  const wks=WEEKS(), wk=rWk&&wks.includes(rWk)?rWk:CUR_WK, m0=dd(wk), e0=new Date(m0);e0.setDate(e0.getDate()+6);
+function weekReport(wk){
+  const m0=dd(wk), e0=new Date(m0);e0.setDate(e0.getDate()+6), cur=wk===CUR_WK;
   const rows=DAILY.map(d=>({d,s:stat(d,wk)})), byCh={};
-  rows.forEach(({d,s})=>{const c=byCh[d.ch]=byCh[d.ch]||{d:0,t:0};c.d+=s.done;c.t+=s.target;if(s.manual)c.m=s.ok==null?"–":s.ok?"Đủ":"Thiếu"});
+  rows.forEach(({d,s})=>{const c=byCh[d.ch]=byCh[d.ch]||{d:0,t:0};c.d+=s.done;c.t+=s.target;if(s.manual)c.m=s.ok==null?"–":s.ok?"Đủ":"Thiếu";if(d.reup)c.r=1});
   const sa=rows.filter(x=>!x.d.reup).reduce((a,x)=>a+x.s.done,0), sb=rows.filter(x=>!x.d.reup).reduce((a,x)=>a+x.s.target,0);
   const posts=[...LOG.filter(l=>wkKey(monday(l.d))===wk).flatMap(l=>l.links.map(u=>({u,ch:l.ch,who:l.who,d:l.d}))),
                ...DAILY.filter(d=>d.cal).flatMap(d=>(CAL[d.cal]||{posts:[]}).posts.filter(p=>wkKey(monday(p.d))===wk).flatMap(p=>p.links.map(u=>({u,ch:d.ch,who:d.who,d:p.d}))))].sort((a,b)=>a.d-b.d);
-  const doneT=ADHOC_ALL.filter(t=>isDone(t)&&t.doneAt&&t.doneAt>=m0&&t.doneAt<=e0), lateT=ADHOC.filter(isLate), nts=notes(wk);
-  return band(` / <a href="#ke-hoach">Kế hoạch & Báo cáo</a> / Báo cáo tuần`,`Tuần ${fmtD(m0)} – ${fmtD(e0)}/${e0.getFullYear()}`,"Báo cáo tuần","Tự tổng hợp từ file Sheets. Update chậm nhất 10h sáng thứ 2.",
-      [[`${sa}/${sb}`,"bài đã đăng / chỉ tiêu"],[doneT.length,"task phát sinh xong"],[lateT.length,"task trễ hạn"],[nts.length,"vướng mắc"]])
-  +(wks.length>1?`<div class="filters" role="group" aria-label="Chọn tuần">${wks.map(w=>`<button type="button" class="chip" data-wk="${w}" aria-pressed="${w===wk}">Tuần ${w.slice(0,5)}</button>`).join("")}</div>`:"")
-  +`<div class="rgrid"><div><div class="blockhead"><h2>Task daily · bài đăng theo kênh</h2></div>
-    ${Object.entries(byCh).map(([n,c])=>`<div class="kpirow"><span>${esc(n)}</span><span class="bar"><i style="width:${c.t?Math.min(100,c.d/c.t*100):0}%"></i></span><span class="v">${c.m||c.d+(c.t?"/"+c.t:"")}</span></div>`).join("")||`<p class="snote">Chưa có dữ liệu.</p>`}
-    <div class="blockhead"><h2>Link bài đã đăng</h2></div><ul class="rlist">${posts.map(x=>`<li><a class="lk" href="${esc(x.u)}" target="_blank" rel="noopener">${esc(x.u)}</a><span>${fmtD(x.d)} · ${esc(x.ch)} · ${esc(nm(x.who))}</span></li>`).join("")||"<li><span>Chưa có link nào trong tuần.</span></li>"}</ul></div>
-    <div><div class="blockhead"><h2>Task phát sinh đã xong</h2></div><ul class="rlist">${doneT.map(t=>`<li><b>${esc(t.t)}</b><span>${fmtD(t.doneAt)} · ${esc(ppl(t.who))}${t.links.length?" · "+lks(t.links):""}</span></li>`).join("")||"<li><span>Chưa có task nào xong trong tuần.</span></li>"}</ul>
-    <div class="blockhead"><h2>Trễ hạn</h2></div><ul class="rlist">${lateT.map(t=>`<li><b>${esc(t.t)}</b><span>Hạn ${fmtD(t.dueD)} · ${esc(ppl(t.who))}</span></li>`).join("")||"<li><span>Không có</span></li>"}</ul>
-    <div class="blockhead"><h2>Vướng mắc</h2></div><ul class="rlist">${nts.map(x=>`<li><b>${esc(x.n)}</b><span>${esc(x.kind)} · ${esc(x.what)} · ${esc(ppl(x.who))}</span></li>`).join("")||"<li><span>Không có</span></li>"}</ul></div></div>`;
+  const doneT=ADHOC_ALL.filter(t=>isDone(t)&&t.doneAt&&t.doneAt>=m0&&t.doneAt<=e0), lateT=ADHOC.filter(t=>isLate(t)&&t.dueD<=e0), nts=notes(wk);
+  return `<section class="wkrep"><div class="wkhead"><div><span class="kicker">${cur?"Tuần này":"Tuần trước"}</span><h2>Tuần ${fmtD(m0)} – ${fmtD(e0)}/${e0.getFullYear()}</h2></div>
+    <div class="wknums"><div><b>${sa}/${sb}</b><span>bài đã đăng / chỉ tiêu</span></div><div><b>${sb?Math.round(sa/sb*100):0}%</b><span>hoàn thành</span></div><div><b>${doneT.length}</b><span>task phát sinh xong</span></div><div><b>${lateT.length}</b><span>task trễ hạn</span></div><div><b>${nts.length}</b><span>vướng mắc</span></div></div></div>
+    <div class="rgrid"><div><h3 class="rh">Task daily · bài đăng theo kênh</h3>
+    ${Object.entries(byCh).map(([n,c])=>`<div class="kpirow"><span>${esc(n)}${c.r?" <small class=\"z\">(re-up)</small>":""}</span><span class="bar"><i style="width:${c.t?Math.min(100,c.d/c.t*100):0}%"></i></span><span class="v">${c.m||c.d+(c.t?"/"+c.t:"")}</span></div>`).join("")||`<p class="snote">Chưa có dữ liệu.</p>`}
+    <h3 class="rh">Link bài đã đăng · ${posts.length}</h3><ul class="rlist short">${posts.map(x=>`<li><a class="lk" href="${esc(x.u)}" target="_blank" rel="noopener">${esc(x.u)}</a><span>${fmtD(x.d)} · ${esc(x.ch)} · ${esc(nm(x.who))}</span></li>`).join("")||"<li><span>Chưa có link nào trong tuần.</span></li>"}</ul></div>
+    <div><h3 class="rh">Task phát sinh đã xong</h3><ul class="rlist">${doneT.map(t=>`<li><b>${esc(t.t)}</b><span>${fmtD(t.doneAt)} · ${esc(ppl(t.who))}${t.links.length?" · "+lks(t.links):""}</span></li>`).join("")||"<li><span>Chưa có task nào xong trong tuần.</span></li>"}</ul>
+    <h3 class="rh">Trễ hạn</h3><ul class="rlist">${lateT.map(t=>`<li><b>${esc(t.t)}</b><span>Hạn ${fmtD(t.dueD)} · ${esc(ppl(t.who))}</span></li>`).join("")||"<li><span>Không có</span></li>"}</ul>
+    <h3 class="rh">Vướng mắc</h3><ul class="rlist">${nts.map(x=>`<li><b>${esc(x.n)}</b><span>${esc(x.kind)} · ${esc(x.what)} · ${esc(ppl(x.who))}</span></li>`).join("")||"<li><span>Không có</span></li>"}</ul></div></div></section>`;
+}
+function vReport(){
+  const prev=new Date(dd(CUR_WK));prev.setDate(prev.getDate()-7);
+  return band(" / Báo cáo tuần","Khối Marketing","Báo cáo tuần","Tự tổng hợp từ file Sheets, hiện 2 tuần gần nhất. Update chậm nhất 10h sáng thứ 2.")
+    +weekReport(CUR_WK)+weekReport(wkKey(prev));
 }
 
 /* ===== TASK PHÁT SINH ===== */
@@ -625,7 +632,7 @@ function vSearch(q){
 }
 
 /* ===== ROUTER ===== */
-const NAV={"ke-hoach":"ke-hoach","bao-cao":"ke-hoach","task-phat-sinh":"task-phat-sinh","task-daily":"task-daily","doanh-so":"doanh-so"};
+const NAV={"ke-hoach":"ke-hoach","bao-cao":"bao-cao","task-phat-sinh":"task-phat-sinh","task-daily":"task-daily","doanh-so":"doanh-so"};
 function route(){
   let h=(location.hash||"#trang-chu").slice(1); const q=$("#q").value.trim();
   if(h==="phan-cong"||h==="nhan-su")h="task-phat-sinh";
