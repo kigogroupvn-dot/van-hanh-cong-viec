@@ -365,7 +365,7 @@ footer .wrap{border-top:1px solid var(--rule);padding-block:28px 40px;font-size:
 <header class="top"><div class="wrap">
   <a href="#trang-chu" aria-label="Trang chủ"><svg class="logo" viewBox="0 0 506 214"><use href="#logo"/></svg></a>
   <nav id="nav" aria-label="Điều hướng">
-    <a href="#trang-chu">Tổng quan</a><a href="#ke-hoach">Kế hoạch</a><a href="#bao-cao">Báo cáo tuần</a><a href="#task-phat-sinh">Task phát sinh</a><a href="#task-daily">Task daily</a><a href="#doanh-so">Doanh số 🔒</a>
+    <a href="#trang-chu">Tổng quan</a><a href="#ke-hoach">Kế hoạch</a><a href="#bao-cao">Báo cáo tuần</a><a href="#task-phat-sinh">Task phát sinh</a><a href="#task-daily">Task daily</a><a href="#doanh-so">Doanh số 🔒</a><a href="#bao-cao-san">Báo cáo sàn</a>
   </nav>
   <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="q" type="search" placeholder="Tìm task, kênh, người…" aria-label="Tìm kiếm"></label>
 </div></header>
@@ -661,7 +661,7 @@ function vSales(){
    <tr><th>Ngày</th>${groups.map(g=>`<th class="n gs">Chi phí</th><th class="n">Doanh thu</th><th class="n">CP / DT</th>`).join("")}</tr></thead><tbody>
    ${dates.map((d,i)=>`<tr><td class="ch">${d}</td>${groups.map(g=>{const c=g.c(i),r=g.r(i);return `<td class="n gs${c?"":" z"}">${c?vnd(c):"–"}</td>${cl(r)}<td class="n ${pc(c,r)}">${pct(c,r)}</td>`}).join("")}</tr>`).join("")}
    <tr class="tot"><td>Tổng</td>${groups.map(g=>`<td class="n gs">${vnd(g.tc)}</td><td class="n">${vnd(g.tr)}</td><td class="n ${pc(g.tc,g.tr)}">${pct(g.tc,g.tr)}</td>`).join("")}</tr></tbody></table></div>`;
-  return head+cmp+daily+`<p class="snote">Nguồn: file "${esc(salesData.file)}", tab ${esc(salesData.tab)}. ${SALES_URL?"Số liệu tải mới mỗi lần mở trang.":"Bản xem trước dùng số liệu chụp ngày 12/11/2026."} CP/DT dưới 100% là có lãi trên quảng cáo, trên 100% là chi phí cao hơn doanh thu.</p>`+shopBlock();
+  return head+cmp+daily+`<p class="snote">Nguồn: file "${esc(salesData.file)}", tab ${esc(salesData.tab)}. ${SALES_URL?"Số liệu tải mới mỗi lần mở trang.":"Bản xem trước dùng số liệu chụp ngày 12/11/2026."} CP/DT dưới 100% là có lãi trên quảng cáo, trên 100% là chi phí cao hơn doanh thu.</p>`;
 }
 document.addEventListener("submit",async e=>{if(e.target.id!=="gate")return;e.preventDefault();await salesLogin($("#pw").value);route()});
 function vSearch(q){
@@ -674,7 +674,7 @@ function vSearch(q){
 }
 
 /* ===== ROUTER ===== */
-const NAV={"ke-hoach":"ke-hoach","bao-cao":"bao-cao","task-phat-sinh":"task-phat-sinh","task-daily":"task-daily","doanh-so":"doanh-so"};
+const NAV={"ke-hoach":"ke-hoach","bao-cao":"bao-cao","task-phat-sinh":"task-phat-sinh","task-daily":"task-daily","doanh-so":"doanh-so","bao-cao-san":"bao-cao-san"};
 function route(){
   let h=(location.hash||"#trang-chu").slice(1); const q=$("#q").value.trim();
   if(h==="phan-cong"||h==="nhan-su")h="task-phat-sinh";
@@ -686,6 +686,7 @@ function route(){
   else if(h==="task-phat-sinh")html=vAdhoc();
   else if(h==="task-daily")html=vDaily();
   else if(h==="doanh-so")html=vSales();
+  else if(h==="bao-cao-san")html=band(" / Báo cáo sàn","Tiktok Shop · Shopee","Báo cáo sàn","Số liệu sàn cập nhật hằng ngày từ trang quản lý nhà bán hàng.")+shopBlock().replace(/^<div class="blockhead"><h2>Báo cáo sàn<\/h2>.*?<\/div>/,"");
   else html=vHome();
   $("#view").innerHTML=html;
   document.body.classList.toggle("home",nav==="trang-chu"&&!q);
