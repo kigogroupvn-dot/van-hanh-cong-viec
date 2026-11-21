@@ -313,6 +313,12 @@ footer .wrap{border-top:1px solid var(--rule);padding-block:28px 40px;font-size:
 .atable td.stxt .upd{display:block;white-space:pre-line}
 .atable td.stxt{font-size:14.5px}.atable tr.late td.due .st{color:var(--crimson)}.atable tr.isdone td{opacity:.65}
 .wtable,.atable{table-layout:fixed}.wtable .c-ch{width:22%}.wtable .c-goal{width:17%}.wtable .c-day{width:8%}.wtable .c-bar{width:17%}.wtable .c-num{width:9%}.wtable .c-note{width:27%}
+.shops{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));gap:16px}.shopc{border:1px solid var(--rule);border-radius:12px;padding:22px 26px;background:var(--white)}
+.shoph{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.shoph h3{font-size:24px;color:var(--velvet);margin-top:4px}.shoph small{text-align:right;font-size:12.5px;color:var(--muted)}
+.shopk{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:12px;margin-top:18px;padding-top:16px;border-top:1px solid var(--rule)}.shopk span,.shopv span{display:block;font-size:12.5px;color:var(--muted)}
+.shopk b{font-family:var(--f-head);font-weight:900;font-size:26px;color:var(--text);white-space:nowrap}.shopk .big b{color:var(--crimson)}.shopk em{margin-left:8px;font-style:normal;font-size:12.5px;font-weight:700;color:#276B35}
+.shopv{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px;background:var(--paper);border-radius:8px;padding:12px 14px}.shopv b{font-family:var(--f-head);font-weight:700;font-size:18px}.shopv .warn b{color:var(--crimson)}
+@media(max-width:900px){.shopk,.shopv{grid-template-columns:1fr 1fr}.shoph{flex-direction:column}.shoph small{text-align:left}}
 .bods{display:grid;gap:16px}.bod{border:1px solid var(--rule);border-left:4px solid var(--crimson);border-radius:12px;padding:22px 26px;background:var(--white)}
 .bodtop{display:flex;justify-content:space-between;gap:20px 32px;flex-wrap:wrap}.bod h3{font-size:22px;margin:6px 0 4px;color:var(--velvet)}.bod p{margin:0;font-size:14.5px;color:var(--muted)}.bod p b{color:var(--text)}
 .bodcost{text-align:right}.bodcost span{display:block;font-size:12.5px;color:var(--muted);letter-spacing:.04em}.bodcost b{font-family:var(--f-head);font-weight:900;font-size:30px;color:var(--crimson);white-space:nowrap}
@@ -376,7 +382,7 @@ footer .wrap{border-top:1px solid var(--rule);padding-block:28px 40px;font-size:
    - ADHOC : tab "Task phát sinh"    → việc làm một lần / chạy dài, có hạn
    - DAILY : tab "Task daily"        → việc đăng bài định kỳ, chỉ tiêu theo ngày/tuần
    - LOG   : tab "Nhật ký đăng bài"  → mỗi bài đăng 1 dòng, web tự đếm cho DAILY */
-let BOD=[], PEOPLE={}, NAMES={}, PLANS=[], ADHOC=[], ADHOC_ALL=[], DAILY=[], LOG=[], CAL={};
+let SHOP=[], BOD=[], PEOPLE={}, NAMES={}, PLANS=[], ADHOC=[], ADHOC_ALL=[], DAILY=[], LOG=[], CAL={};
 let LOADED=false, SOURCE_NOTE="Đang tải dữ liệu…";
 
 /* ===== HELPERS ===== */
@@ -486,6 +492,20 @@ function bodBlock(){
       ${b.lines.length?`<table class="bodtab">${b.lines[0].length===4?`<thead><tr><th>Giai đoạn</th><th>Thời gian</th><th>Số lượng</th><th class="n">Chi phí</th></tr></thead>`:""}<tbody>${b.lines.map(c=>`<tr>${c.map((x,i)=>`<td class="${i===c.length-1&&c.length>1?"n":""}">${esc(i===c.length-1&&c.length>1&&/^[0-9.]+$/.test(x)?x+" ₫":x)}</td>`).join("")}</tr>`).join("")}<tr class="tot"><td colspan="${Math.max(1,b.lines[0].length-1)}">Tổng chi phí</td><td class="n">${money(b.cost)}</td></tr></tbody></table>`:""}
       ${b.link?`<p class="bodlink">Chi tiết xem tại link đính kèm: <a class="lk" href="${esc(b.link)}" target="_blank" rel="noopener">Mở file kế hoạch ↗</a></p>`:""}
       ${b.note?`<p class="bodnote">Ghi chú BOD: ${esc(b.note)}</p>`:""}</article>`}).join("")}</div>`;
+}
+
+function shopBlock(){
+  const money=n=>n.toLocaleString("vi-VN")+" ₫";
+  if(!SHOP.length)return `<div class="blockhead"><h2>Báo cáo sàn</h2></div><p class="snote">Chưa có số liệu sàn.</p>`;
+  const keys=[...new Set(SHOP.map(x=>x.san+"|"+x.shop))];
+  const latest=keys.map(k=>SHOP.filter(x=>x.san+"|"+x.shop===k).sort((a,b)=>b.d-a.d)[0]);
+  const hist=[...SHOP].sort((a,b)=>b.d-a.d).slice(0,14);
+  return `<div class="blockhead"><h2>Báo cáo sàn</h2><span class="wklab">Cập nhật hằng ngày từ trang quản lý sàn</span></div>
+  <div class="shops">${latest.map(x=>`<article class="shopc"><div class="shoph"><div><span class="kicker">${esc(x.san)} · ${esc(x.ky)}</span><h3>${esc(x.shop)}</h3></div><small>Báo cáo ngày ${fmtD(x.d)}${x.upd?`<br>Sàn cập nhật: ${esc(x.upd)}`:""}</small></div>
+    <div class="shopk"><div class="big"><span>GMV</span><b>${money(x.gmv)}</b></div><div><span>Khách hàng</span><b>${esc(x.kh||"–")}</b></div><div><span>Đơn hàng SKU</span><b>${esc(x.don||"–")}</b></div><div><span>Khách truy cập</span><b>${esc(x.visit||"–")}</b>${x.grow?`<em>${esc(x.grow)}</em>`:""}</div></div>
+    <div class="shopv"><div class="${+x.ship?"warn":""}"><span>Đơn cần vận chuyển</span><b>${esc(x.ship||"0")}</b></div><div><span>Đơn trả hàng</span><b>${esc(x.ret||"0")}</b></div><div><span>SP bị từ chối</span><b>${esc(x.rej||"0")}</b></div><div class="${+x.bad?"warn":""}"><span>Đánh giá tiêu cực</span><b>${esc(x.bad||"0")}</b></div></div>
+    ${x.n?`<p class="snote">Ghi chú: ${esc(x.n)}</p>`:""}</article>`).join("")}</div>
+  ${hist.length>1?`<h3 class="rh">Lịch sử báo cáo</h3><div class="dwrap"><table class="tasks stable"><thead><tr><th>Ngày</th><th>Shop</th><th>Kỳ</th><th class="n">GMV</th><th class="n">Khách</th><th class="n">Đơn SKU</th><th class="n">Truy cập</th></tr></thead><tbody>${hist.map(x=>`<tr><td>${fmtD(x.d)}</td><td>${esc(x.san)} · ${esc(x.shop)}</td><td>${esc(x.ky)}</td><td class="n">${money(x.gmv)}</td><td class="n">${esc(x.kh)}</td><td class="n">${esc(x.don)}</td><td class="n">${esc(x.visit)}</td></tr>`).join("")}</tbody></table></div>`:""}`;
 }
 
 /* ===== KẾ HOẠCH & BÁO CÁO ===== */
@@ -641,7 +661,7 @@ function vSales(){
    <tr><th>Ngày</th>${groups.map(g=>`<th class="n gs">Chi phí</th><th class="n">Doanh thu</th><th class="n">CP / DT</th>`).join("")}</tr></thead><tbody>
    ${dates.map((d,i)=>`<tr><td class="ch">${d}</td>${groups.map(g=>{const c=g.c(i),r=g.r(i);return `<td class="n gs${c?"":" z"}">${c?vnd(c):"–"}</td>${cl(r)}<td class="n ${pc(c,r)}">${pct(c,r)}</td>`}).join("")}</tr>`).join("")}
    <tr class="tot"><td>Tổng</td>${groups.map(g=>`<td class="n gs">${vnd(g.tc)}</td><td class="n">${vnd(g.tr)}</td><td class="n ${pc(g.tc,g.tr)}">${pct(g.tc,g.tr)}</td>`).join("")}</tr></tbody></table></div>`;
-  return head+cmp+daily+`<p class="snote">Nguồn: file "${esc(salesData.file)}", tab ${esc(salesData.tab)}. ${SALES_URL?"Số liệu tải mới mỗi lần mở trang.":"Bản xem trước dùng số liệu chụp ngày 12/11/2026."} CP/DT dưới 100% là có lãi trên quảng cáo, trên 100% là chi phí cao hơn doanh thu.</p>`;
+  return head+cmp+daily+`<p class="snote">Nguồn: file "${esc(salesData.file)}", tab ${esc(salesData.tab)}. ${SALES_URL?"Số liệu tải mới mỗi lần mở trang.":"Bản xem trước dùng số liệu chụp ngày 12/11/2026."} CP/DT dưới 100% là có lãi trên quảng cáo, trên 100% là chi phí cao hơn doanh thu.</p>`+shopBlock();
 }
 document.addEventListener("submit",async e=>{if(e.target.id!=="gate")return;e.preventDefault();await salesLogin($("#pw").value);route()});
 function vSearch(q){
@@ -707,6 +727,7 @@ async function loadAll(){
       return {id:col(r,"Mã"),ch:col(r,"Kênh"),t:col(r,"Việc"),brand:col(r,"Brand"),who:k,target:+String(col(r,"Chỉ tiêu")).replace(",",".")||0,per:/ngày/i.test(col(r,"Theo"))?"ngày":"tuần",cal:cp,manual:/hào tích/i.test(src),reup:/re-?up/i.test(col(r,"Kênh")+" "+col(r,"Việc")),ok:/^(true|có|x|đủ)$/i.test(col(r,"Hào tích")),note:col(r,"Ghi chú"),pnote:col(r,"Ghi chú tiến độ")}});
     LOG=nk.map(r=>({d:dd(col(r,"Ngày")),who:one(col(r,"Người đăng")),ch:col(r,"Kênh"),links:links(col(r,"Link bài")),n:col(r,"Ghi chú"),row:r._row})).filter(l=>l.d&&l.who);
     try{BOD=(await tab(id,"Cần BOD duyệt",["Nội dung","Trạng thái"])).filter(r=>col(r,"Nội dung")).map(r=>({id:col(r,"Mã"),t:col(r,"Nội dung"),by:col(r,"Người đề xuất"),task:col(r,"Task liên quan"),cost:+String(col(r,"Chi phí dự kiến")).replace(/[^0-9]/g,"")||0,lines:col(r,"Chi tiết chi phí").split(/\n/).map(x=>x.trim()).filter(Boolean).map(x=>x.split(/\s*·\s*/)),link:links(col(r,"Link chi tiết"))[0]||"",due:dd(col(r,"Hạn duyệt")),st:col(r,"Trạng thái")||"Chờ duyệt",note:col(r,"Ghi chú BOD")}))}catch(e){BOD=[]}
+    try{SHOP=(await tab(id,"Báo cáo sàn",["Ngày báo cáo","GMV"])).map(r=>({d:dd(col(r,"Ngày báo cáo")),san:col(r,"Sàn"),shop:col(r,"Shop"),ky:col(r,"Kỳ số liệu"),upd:col(r,"Sàn cập nhật"),gmv:+String(col(r,"GMV")).replace(/[^0-9]/g,"")||0,kh:col(r,"Khách hàng"),don:col(r,"Đơn hàng SKU"),visit:col(r,"Khách truy cập"),grow:col(r,"Tăng trưởng"),ship:col(r,"Đơn cần vận chuyển"),ret:col(r,"Đơn trả hàng"),rej:col(r,"Sản phẩm bị từ chối"),bad:col(r,"Đánh giá tiêu cực"),n:col(r,"Ghi chú")})).filter(x=>x.d)}catch(e){SHOP=[]}
     CAL=cal; PEOPLE=people; LOADED=true;
     const now=new Date(); SOURCE_NOTE="Dữ liệu cập nhật lúc "+String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0")+" "+fmtD(now)+"/"+now.getFullYear();
   }catch(e){ SOURCE_NOTE="Chưa đọc được Google Sheets ("+e.message+"). Thử tải lại trang."; }
