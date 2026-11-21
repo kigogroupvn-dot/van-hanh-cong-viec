@@ -406,6 +406,7 @@ function dueTag(t){
 const dailyOf=k=>DAILY.filter(d=>d.who===k);
 function stat(d,wk=CUR_WK){
   const cur=wk===CUR_WK, m0=dd(wk);
+  if(d.manual)return {manual:true,ok:cur?d.ok:null,done:0,target:0,exp:0,today:0,links:[],notes:[],behind:false};
   if(d.cal){
     const P=(CAL[d.cal]||{posts:[]}).posts.filter(p=>wkKey(monday(p.d))===wk);
     const done=P.filter(p=>p.done).length, target=P.length, exp=cur?P.filter(p=>p.d<=TODAY).length:target;
@@ -483,7 +484,7 @@ let rWk=null;
 function vReport(){
   const wks=WEEKS(), wk=rWk&&wks.includes(rWk)?rWk:CUR_WK, m0=dd(wk), e0=new Date(m0);e0.setDate(e0.getDate()+6);
   const rows=DAILY.map(d=>({d,s:stat(d,wk)})), byCh={};
-  rows.forEach(({d,s})=>{const c=byCh[d.ch]=byCh[d.ch]||{d:0,t:0};c.d+=s.done;c.t+=s.target});
+  rows.forEach(({d,s})=>{const c=byCh[d.ch]=byCh[d.ch]||{d:0,t:0};c.d+=s.done;c.t+=s.target;if(s.manual)c.m=s.ok==null?"–":s.ok?"Đủ":"Thiếu"});
   const sa=rows.reduce((a,x)=>a+x.s.done,0), sb=rows.reduce((a,x)=>a+x.s.target,0);
   const posts=[...LOG.filter(l=>wkKey(monday(l.d))===wk).flatMap(l=>l.links.map(u=>({u,ch:l.ch,who:l.who,d:l.d}))),
                ...DAILY.filter(d=>d.cal).flatMap(d=>(CAL[d.cal]||{posts:[]}).posts.filter(p=>wkKey(monday(p.d))===wk).flatMap(p=>p.links.map(u=>({u,ch:d.ch,who:d.who,d:p.d}))))].sort((a,b)=>a.d-b.d);
@@ -492,7 +493,7 @@ function vReport(){
       [[`${sa}/${sb}`,"bài đã đăng / chỉ tiêu"],[doneT.length,"task phát sinh xong"],[lateT.length,"task trễ hạn"],[nts.length,"vướng mắc"]])
   +(wks.length>1?`<div class="filters" role="group" aria-label="Chọn tuần">${wks.map(w=>`<button type="button" class="chip" data-wk="${w}" aria-pressed="${w===wk}">Tuần ${w.slice(0,5)}</button>`).join("")}</div>`:"")
   +`<div class="rgrid"><div><div class="blockhead"><h2>Task daily · bài đăng theo kênh</h2></div>
-    ${Object.entries(byCh).map(([n,c])=>`<div class="kpirow"><span>${esc(n)}</span><span class="bar"><i style="width:${c.t?Math.min(100,c.d/c.t*100):0}%"></i></span><span class="v">${c.d}${c.t?"/"+c.t:""}</span></div>`).join("")||`<p class="snote">Chưa có dữ liệu.</p>`}
+    ${Object.entries(byCh).map(([n,c])=>`<div class="kpirow"><span>${esc(n)}</span><span class="bar"><i style="width:${c.t?Math.min(100,c.d/c.t*100):0}%"></i></span><span class="v">${c.m||c.d+(c.t?"/"+c.t:"")}</span></div>`).join("")||`<p class="snote">Chưa có dữ liệu.</p>`}
     <div class="blockhead"><h2>Link bài đã đăng</h2></div><ul class="rlist">${posts.map(x=>`<li><a class="lk" href="${esc(x.u)}" target="_blank" rel="noopener">${esc(x.u)}</a><span>${fmtD(x.d)} · ${esc(x.ch)} · ${esc(nm(x.who))}</span></li>`).join("")||"<li><span>Chưa có link nào trong tuần.</span></li>"}</ul></div>
     <div><div class="blockhead"><h2>Task phát sinh đã xong</h2></div><ul class="rlist">${doneT.map(t=>`<li><b>${esc(t.t)}</b><span>${fmtD(t.doneAt)} · ${esc(ppl(t.who))}${t.links.length?" · "+lks(t.links):""}</span></li>`).join("")||"<li><span>Chưa có task nào xong trong tuần.</span></li>"}</ul>
     <div class="blockhead"><h2>Trễ hạn</h2></div><ul class="rlist">${lateT.map(t=>`<li><b>${esc(t.t)}</b><span>Hạn ${fmtD(t.dueD)} · ${esc(ppl(t.who))}</span></li>`).join("")||"<li><span>Không có</span></li>"}</ul>
@@ -533,9 +534,10 @@ function dailyTable(list,wk,showWho=true){
     <td class="ch">${esc(d.ch)}<small>${esc(d.t)}</small>${d.cal?`<small>Tự lấy từ lịch content${s.dates&&s.dates.length?" · ngày đăng: "+s.dates.join(", "):""}</small>`:""}</td>
     ${showWho?`<td>${PEOPLE[d.who]?`<a href="#${d.who}">${esc(nm(d.who))}</a>`:esc(nm(d.who))}</td>`:""}
     <td class="goal">${esc(goalTxt(d))}${d.note?`<small>${esc(d.note)}</small>`:""}</td>
-    ${cur?`<td class="n fig">${s.today}${d.per==="ngày"&&d.target?"/"+d.target:""}</td>`:""}
-    <td>${s.target?pbar(s.done,s.target):`<span class="z">Đếm số bài</span>`}${s.target?`<small class="pct${s.behind?" bad":""}">${Math.round(s.done/s.target*100)}% hoàn thành</small>`:""}</td>
-    <td class="n fig ${s.behind?"bad":""}">${s.done}${s.target?"/"+s.target:""}</td>
+    ${cur?`<td class="n fig">${s.manual?`<span class="z">–</span>`:s.today+(d.per==="ngày"&&d.target?"/"+d.target:"")}</td>`:""}
+    ${s.manual?`<td>${s.ok==null?`<span class="z">Chưa xác nhận</span>`:`<span class="badge ${s.ok?"b-done":"b-doing"}">${s.ok?"✓ Đủ":"Thiếu"}</span>`}<small>Hào tích xác nhận, không đếm bài</small></td><td class="n"><span class="z">–</span></td>`
+    :`<td>${s.target?pbar(s.done,s.target):`<span class="z">Đếm số bài</span>`}${s.target?`<small class="pct${s.behind?" bad":""}">${Math.round(s.done/s.target*100)}% hoàn thành</small>`:""}</td>
+    <td class="n fig ${s.behind?"bad":""}">${s.done}${s.target?"/"+s.target:""}</td>`}
     <td class="pnote">${cur&&d.pnote?`<span>${esc(d.pnote)}</span>`:""}${s.notes&&s.notes.length?s.notes.map(n=>`<small>${esc(n)}</small>`).join(""):""}${!(cur&&d.pnote)&&!(s.notes&&s.notes.length)?(s.behind?`<span class="z">Chưa ghi lý do chậm</span>`:`<span class="z">–</span>`):""}</td></tr>`}).join("")}</tbody></table>`;
 }
 function logList(list){
@@ -550,7 +552,7 @@ function vDaily(){
   return band(" / Task daily","Khối Marketing","Task daily","Việc đăng bài định kỳ. Mỗi lần đăng bài, nhân viên thêm 1 dòng vào tab Nhật ký đăng bài; web tự đếm theo ngày và tuần.",
       [[`${ws.d}/${ws.t}`,`bài tuần ${wkRange(wk)}`],...(wk===CUR_WK?[[todayN,"bài hôm nay"]]:[]),[slow,"việc chậm tiến độ"]])
   +(wks.length>1?`<div class="filters" role="group" aria-label="Chọn tuần">${wks.map(w=>`<button type="button" class="chip" data-dwk="${w}" aria-pressed="${w===wk}">Tuần ${w.slice(0,5)}</button>`).join("")}</div>`:"")
-  +keys.map(k=>{const s=wkSum(dailyOf(k),wk);return `<div class="pgroup"><a class="pghead" href="#${k}"><span class="av">${PEOPLE[k]?PEOPLE[k].i:esc(nm(k)).slice(0,2)}</span><div><b>${esc(nm(k))}</b><small>${esc(PEOPLE[k]?PEOPLE[k].role:"")}</small></div><div class="nums"><span><strong>${s.d}${s.t?"/"+s.t:""}</strong>bài tuần</span></div></a>${dailyTable(dailyOf(k),wk,false)}</div>`}).join("")
+  +keys.map(k=>{const s=wkSum(dailyOf(k),wk);return `<div class="pgroup"><a class="pghead" href="#${k}"><span class="av">${PEOPLE[k]?PEOPLE[k].i:esc(nm(k)).slice(0,2)}</span><div><b>${esc(nm(k))}</b><small>${esc(PEOPLE[k]?PEOPLE[k].role:"")}</small></div><div class="nums">${s.t||!dailyOf(k).every(d=>d.manual)?`<span><strong>${s.d}${s.t?"/"+s.t:""}</strong>bài tuần</span>`:`<span><strong>${dailyOf(k).every(d=>stat(d,wk).ok)?"Đủ":"Thiếu"}</strong>Hào xác nhận</span>`}</div></a>${dailyTable(dailyOf(k),wk,false)}</div>`}).join("")
   +`<div class="blockhead"><h2>Nhật ký đăng bài · tuần ${wkRange(wk)}</h2></div>${logList(recent)}`;
 }
 
@@ -673,7 +675,7 @@ async function loadAll(){
     ADHOC=ADHOC_ALL.filter(t=>!(t.state==="done"&&t.doneAt&&TODAY-t.doneAt>7*DAY));
     DAILY=td.filter(r=>col(r,"Kênh")&&col(r,"Người làm")).map(r=>{const k=who(col(r,"Người làm"))[0],src=col(r,"Nguồn số liệu");
       const cp=/lịch/i.test(src)?(Object.keys(cal).find(id=>cal[id].who===k)||Object.keys(cal)[0]):null;
-      return {id:col(r,"Mã"),ch:col(r,"Kênh"),t:col(r,"Việc"),brand:col(r,"Brand"),who:k,target:+String(col(r,"Chỉ tiêu")).replace(",",".")||0,per:/ngày/i.test(col(r,"Theo"))?"ngày":"tuần",cal:cp,note:col(r,"Ghi chú"),pnote:col(r,"Ghi chú tiến độ")}});
+      return {id:col(r,"Mã"),ch:col(r,"Kênh"),t:col(r,"Việc"),brand:col(r,"Brand"),who:k,target:+String(col(r,"Chỉ tiêu")).replace(",",".")||0,per:/ngày/i.test(col(r,"Theo"))?"ngày":"tuần",cal:cp,manual:/hào tích/i.test(src),ok:/^(true|có|x|đủ)$/i.test(col(r,"Hào tích")),note:col(r,"Ghi chú"),pnote:col(r,"Ghi chú tiến độ")}});
     LOG=nk.map(r=>({d:dd(col(r,"Ngày")),who:one(col(r,"Người đăng")),ch:col(r,"Kênh"),links:links(col(r,"Link bài")),n:col(r,"Ghi chú"),row:r._row})).filter(l=>l.d&&l.who);
     CAL=cal; PEOPLE=people; LOADED=true;
     const now=new Date(); SOURCE_NOTE="Dữ liệu cập nhật lúc "+String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0")+" "+fmtD(now)+"/"+now.getFullYear();
