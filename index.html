@@ -313,6 +313,13 @@ footer .wrap{border-top:1px solid var(--rule);padding-block:28px 40px;font-size:
 .atable td.stxt .upd{display:block;white-space:pre-line}
 .atable td.stxt{font-size:14.5px}.atable tr.late td.due .st{color:var(--crimson)}.atable tr.isdone td{opacity:.65}
 .wtable,.atable{table-layout:fixed}.wtable .c-ch{width:22%}.wtable .c-goal{width:17%}.wtable .c-day{width:8%}.wtable .c-bar{width:17%}.wtable .c-num{width:9%}.wtable .c-note{width:27%}
+.bods{display:grid;gap:16px}.bod{border:1px solid var(--rule);border-left:4px solid var(--crimson);border-radius:12px;padding:22px 26px;background:var(--white)}
+.bodtop{display:flex;justify-content:space-between;gap:20px 32px;flex-wrap:wrap}.bod h3{font-size:22px;margin:6px 0 4px;color:var(--velvet)}.bod p{margin:0;font-size:14.5px;color:var(--muted)}.bod p b{color:var(--text)}
+.bodcost{text-align:right}.bodcost span{display:block;font-size:12.5px;color:var(--muted);letter-spacing:.04em}.bodcost b{font-family:var(--f-head);font-weight:900;font-size:30px;color:var(--crimson);white-space:nowrap}
+.bodtab{width:100%;border-collapse:collapse;margin-top:16px;font-size:14.5px}.bodtab td{padding:9px 12px 9px 0;border-bottom:1px solid var(--rule)}.bodtab th{font-family:var(--f-head);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 12px 8px 0;border-bottom:1.5px solid var(--velvet)}.bodtab th.n{text-align:right}.bodtab td.n{text-align:right;font-family:var(--f-head);font-weight:700;white-space:nowrap}
+.bodtab tr.tot td{border-bottom:none;font-weight:700;color:var(--velvet);background:var(--misty);padding-left:12px}.bodtab tr.tot td.n{color:var(--crimson)}
+.bodlink{margin-top:14px!important}.bodnote{margin-top:8px!important;color:var(--velvet)!important}
+@media(max-width:900px){.bodcost{text-align:left}.bodtab td{padding-right:8px;font-size:13px}}
 .wkrep{margin-top:56px;padding-top:4px}.wkrep+.wkrep{border-top:1px dashed var(--rule);padding-top:40px}
 .wkhead{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:18px 32px;border-bottom:1.5px solid var(--velvet);padding-bottom:16px}
 .wkhead h2{font-size:30px;margin-top:6px}.wknums{display:flex;flex-wrap:wrap;gap:8px 28px}.wknums div{min-width:90px}
@@ -369,7 +376,7 @@ footer .wrap{border-top:1px solid var(--rule);padding-block:28px 40px;font-size:
    - ADHOC : tab "Task phát sinh"    → việc làm một lần / chạy dài, có hạn
    - DAILY : tab "Task daily"        → việc đăng bài định kỳ, chỉ tiêu theo ngày/tuần
    - LOG   : tab "Nhật ký đăng bài"  → mỗi bài đăng 1 dòng, web tự đếm cho DAILY */
-let PEOPLE={}, NAMES={}, PLANS=[], ADHOC=[], ADHOC_ALL=[], DAILY=[], LOG=[], CAL={};
+let BOD=[], PEOPLE={}, NAMES={}, PLANS=[], ADHOC=[], ADHOC_ALL=[], DAILY=[], LOG=[], CAL={};
 let LOADED=false, SOURCE_NOTE="Đang tải dữ liệu…";
 
 /* ===== HELPERS ===== */
@@ -462,9 +469,23 @@ function vHome(){
       <a href="#task-phat-sinh"><b>${open.length}</b><span>task phát sinh đang làm${lateT.length?` · <em>${lateT.length} trễ hạn</em>`:""}</span></a>
       <a href="#task-daily"><b>${ws.d}/${ws.t}</b><span>bài đăng tuần này</span></a>
       <a href="#task-daily"><b>${todayN}</b><span>bài đăng hôm nay</span></a></div><small>${esc(SOURCE_NOTE)}.</small></section>
+    ${bodBlock()}
     <div class="two"><div><div class="blockhead"><h2>Cần chú ý</h2></div><div class="attn">${attn}</div></div>
     <div><div class="blockhead"><h2>Nhân sự</h2></div><div class="people">${people}</div></div></div>
     <div class="blockhead"><h2>Kế hoạch</h2><a href="#ke-hoach">Tất cả kế hoạch →</a></div><div class="plans">${PLANS.map(planCard).join("")}</div>`;
+}
+
+function bodBlock(){
+  const L=BOD.filter(b=>/chờ/i.test(b.st));
+  if(!L.length)return "";
+  const money=n=>n.toLocaleString("vi-VN")+" ₫";
+  return `<div class="blockhead"><h2>Cần BOD duyệt</h2><span class="wklab">${L.length} đề xuất chờ duyệt</span></div><div class="bods">${L.map(b=>{const task=ADHOC_ALL.find(t=>t.id===b.task);const n=b.due?daysTo(b.due):null;
+    return `<article class="bod"><div class="bodtop"><div><span class="kicker">${esc(b.st)}${b.due?` · hạn duyệt ${fmtD(b.due)}${n!=null&&n<=1?(n<0?" · quá hạn":n===0?" · hôm nay":" · ngày mai"):""}`:""}</span>
+      <h3>${esc(b.t)}</h3><p>Đề xuất: <b>${esc(b.by)}</b>${task?` · Task ${esc(task.id)}: ${esc(task.t)}`:b.task?` · Task ${esc(b.task)}`:""}</p></div>
+      <div class="bodcost"><span>Chi phí dự kiến</span><b>${money(b.cost)}</b></div></div>
+      ${b.lines.length?`<table class="bodtab">${b.lines[0].length===4?`<thead><tr><th>Giai đoạn</th><th>Thời gian</th><th>Số lượng</th><th class="n">Chi phí</th></tr></thead>`:""}<tbody>${b.lines.map(c=>`<tr>${c.map((x,i)=>`<td class="${i===c.length-1&&c.length>1?"n":""}">${esc(i===c.length-1&&c.length>1&&/^[0-9.]+$/.test(x)?x+" ₫":x)}</td>`).join("")}</tr>`).join("")}<tr class="tot"><td colspan="${Math.max(1,b.lines[0].length-1)}">Tổng chi phí</td><td class="n">${money(b.cost)}</td></tr></tbody></table>`:""}
+      ${b.link?`<p class="bodlink">Chi tiết xem tại link đính kèm: <a class="lk" href="${esc(b.link)}" target="_blank" rel="noopener">Mở file kế hoạch ↗</a></p>`:""}
+      ${b.note?`<p class="bodnote">Ghi chú BOD: ${esc(b.note)}</p>`:""}</article>`}).join("")}</div>`;
 }
 
 /* ===== KẾ HOẠCH & BÁO CÁO ===== */
@@ -685,6 +706,7 @@ async function loadAll(){
       const cp=/lịch/i.test(src)?(Object.keys(cal).find(id=>cal[id].who===k)||Object.keys(cal)[0]):null;
       return {id:col(r,"Mã"),ch:col(r,"Kênh"),t:col(r,"Việc"),brand:col(r,"Brand"),who:k,target:+String(col(r,"Chỉ tiêu")).replace(",",".")||0,per:/ngày/i.test(col(r,"Theo"))?"ngày":"tuần",cal:cp,manual:/hào tích/i.test(src),reup:/re-?up/i.test(col(r,"Kênh")+" "+col(r,"Việc")),ok:/^(true|có|x|đủ)$/i.test(col(r,"Hào tích")),note:col(r,"Ghi chú"),pnote:col(r,"Ghi chú tiến độ")}});
     LOG=nk.map(r=>({d:dd(col(r,"Ngày")),who:one(col(r,"Người đăng")),ch:col(r,"Kênh"),links:links(col(r,"Link bài")),n:col(r,"Ghi chú"),row:r._row})).filter(l=>l.d&&l.who);
+    try{BOD=(await tab(id,"Cần BOD duyệt",["Nội dung","Trạng thái"])).filter(r=>col(r,"Nội dung")).map(r=>({id:col(r,"Mã"),t:col(r,"Nội dung"),by:col(r,"Người đề xuất"),task:col(r,"Task liên quan"),cost:+String(col(r,"Chi phí dự kiến")).replace(/[^0-9]/g,"")||0,lines:col(r,"Chi tiết chi phí").split(/\n/).map(x=>x.trim()).filter(Boolean).map(x=>x.split(/\s*·\s*/)),link:links(col(r,"Link chi tiết"))[0]||"",due:dd(col(r,"Hạn duyệt")),st:col(r,"Trạng thái")||"Chờ duyệt",note:col(r,"Ghi chú BOD")}))}catch(e){BOD=[]}
     CAL=cal; PEOPLE=people; LOADED=true;
     const now=new Date(); SOURCE_NOTE="Dữ liệu cập nhật lúc "+String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0")+" "+fmtD(now)+"/"+now.getFullYear();
   }catch(e){ SOURCE_NOTE="Chưa đọc được Google Sheets ("+e.message+"). Thử tải lại trang."; }
