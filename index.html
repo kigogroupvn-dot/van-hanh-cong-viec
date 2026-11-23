@@ -326,6 +326,7 @@ footer .wrap{border-top:1px solid var(--rule);padding-block:28px 40px;font-size:
 .bodtab tr.tot td{border-bottom:none;font-weight:700;color:var(--velvet);background:var(--misty);padding-left:12px}.bodtab tr.tot td.n{color:var(--crimson)}
 .bodlink{margin-top:14px!important}.bodnote{margin-top:8px!important;color:var(--velvet)!important}
 @media(max-width:900px){.bodcost{text-align:left}.bodtab td{padding-right:8px;font-size:13px}}
+.hreps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:16px}.hrep{display:block;border:1px solid var(--rule);border-radius:12px;padding:20px 24px;text-decoration:none;color:inherit}.hrep:hover{border-color:var(--crimson)}.hrep h3{font-size:24px;color:var(--velvet);margin:4px 0 14px}.hrep .wknums{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr 1fr;gap:10px}.hrep .wknums div{min-width:0}.hrep .wknums b{font-size:24px}@media(max-width:900px){.hrep .wknums{grid-template-columns:repeat(3,1fr)}}
 .wkrep{margin-top:56px;padding-top:4px}.wkrep+.wkrep{border-top:1px dashed var(--rule);padding-top:40px}
 .wkhead{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:18px 32px;border-bottom:1.5px solid var(--velvet);padding-bottom:16px}
 .wkhead h2{font-size:30px;margin-top:6px}.wknums{display:flex;flex-wrap:wrap;gap:8px 28px}.wknums div{min-width:90px}
@@ -395,6 +396,7 @@ const fmtD=d=>String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).pad
 const monday=d=>{const x=new Date(d);x.setHours(0,0,0,0);x.setDate(x.getDate()-((x.getDay()+6)%7));return x};
 const wkKey=d=>fmtD(d)+"/"+d.getFullYear();
 const CUR_WK=wkKey(monday(TODAY));
+const REPORT_FROM=new Date(2026,10,16); /* tuần bắt đầu ghi Nhật ký; tuần trước mốc này không hiện */
 const dayIdx=()=>(TODAY.getDay()+6)%7;
 const nm=k=>(PEOPLE[k]&&PEOPLE[k].n)||NAMES[k]||k;
 const ppl=a=>a.map(nm).join(", ");
@@ -476,6 +478,7 @@ function vHome(){
       <a href="#task-daily"><b>${ws.d}/${ws.t}</b><span>bài đăng tuần này</span></a>
       <a href="#task-daily"><b>${todayN}</b><span>bài đăng hôm nay</span></a></div><small>${esc(SOURCE_NOTE)}.</small></section>
     ${bodBlock()}
+    ${homeReports()}
     <div class="two"><div><div class="blockhead"><h2>Cần chú ý</h2></div><div class="attn">${attn}</div></div>
     <div><div class="blockhead"><h2>Nhân sự</h2></div><div class="people">${people}</div></div></div>
     <div class="blockhead"><h2>Kế hoạch</h2><a href="#ke-hoach">Tất cả kế hoạch →</a></div><div class="plans">${PLANS.map(planCard).join("")}</div>`;
@@ -525,6 +528,18 @@ function vPlans(){
    <div class="plans" style="margin-top:18px">${list.map(planCard).join("")||`<p class="empty">Chưa có kế hoạch nào.</p>`}</div>`;
 }
 let rWk=null;
+function weekStats(wk){
+  const m0=dd(wk), e0=new Date(m0);e0.setDate(e0.getDate()+6);
+  const rows=DAILY.filter(d=>!d.reup).map(d=>stat(d,wk)), sa=rows.reduce((a,x)=>a+x.done,0), sb=rows.reduce((a,x)=>a+x.target,0);
+  return {m0,e0,sa,sb,pct:sb?Math.round(sa/sb*100):0,done:ADHOC_ALL.filter(t=>isDone(t)&&t.doneAt&&t.doneAt>=m0&&t.doneAt<=e0).length,late:ADHOC.filter(t=>isLate(t)&&t.dueD<=e0).length,notes:notes(wk).length};
+}
+function homeReports(){
+  const prev=new Date(dd(CUR_WK));prev.setDate(prev.getDate()-7);
+  const wks=[CUR_WK,...(prev>=REPORT_FROM?[wkKey(prev)]:[])];
+  return `<div class="blockhead"><h2>Báo cáo tuần</h2><a href="#bao-cao">Xem báo cáo chi tiết →</a></div><div class="hreps">${wks.map((wk,i)=>{const x=weekStats(wk);
+    return `<a class="hrep" href="#bao-cao"><span class="kicker">${i?"Tuần trước":"Tuần này"}</span><h3>${fmtD(x.m0)} – ${fmtD(x.e0)}</h3>
+      <div class="wknums"><div><b>${x.sa}/${x.sb}</b><span>bài đăng / chỉ tiêu</span></div><div><b>${x.pct}%</b><span>hoàn thành</span></div><div><b>${x.done}</b><span>task xong</span></div><div><b>${x.late}</b><span>trễ hạn</span></div><div><b>${x.notes}</b><span>vướng mắc</span></div></div></a>`}).join("")}</div>`;
+}
 function weekReport(wk){
   const m0=dd(wk), e0=new Date(m0);e0.setDate(e0.getDate()+6), cur=wk===CUR_WK;
   const rows=DAILY.map(d=>({d,s:stat(d,wk)})), byCh={};
@@ -542,7 +557,6 @@ function weekReport(wk){
     <h3 class="rh">Trễ hạn</h3><ul class="rlist">${lateT.map(t=>`<li><b>${esc(t.t)}</b><span>Hạn ${fmtD(t.dueD)} · ${esc(ppl(t.who))}</span></li>`).join("")||"<li><span>Không có</span></li>"}</ul>
     <h3 class="rh">Vướng mắc</h3><ul class="rlist">${nts.map(x=>`<li><b>${esc(x.n)}</b><span>${esc(x.kind)} · ${esc(x.what)} · ${esc(ppl(x.who))}</span></li>`).join("")||"<li><span>Không có</span></li>"}</ul></div></div></section>`;
 }
-const REPORT_FROM=new Date(2026,10,16); /* tuần bắt đầu ghi Nhật ký; tuần trước mốc này không hiện */
 function vReport(){
   const prev=new Date(dd(CUR_WK));prev.setDate(prev.getDate()-7);
   return band(" / Báo cáo tuần","Khối Marketing","Báo cáo tuần","Tự tổng hợp từ file Sheets, hiện 2 tuần gần nhất (tuần này ở trên). Update chậm nhất 10h sáng thứ 2.")
