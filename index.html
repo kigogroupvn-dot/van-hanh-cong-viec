@@ -319,6 +319,8 @@ footer .wrap{border-top:1px solid var(--rule);padding-block:28px 40px;font-size:
 .shopk b{font-family:var(--f-head);font-weight:900;font-size:26px;color:var(--text);white-space:nowrap}.shopk .big b{color:var(--crimson)}.shopk em{margin-left:8px;font-style:normal;font-size:12.5px;font-weight:700;color:#276B35}
 .shopv{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px;background:var(--paper);border-radius:8px;padding:12px 14px}.shopv b{font-family:var(--f-head);font-weight:700;font-size:18px}.shopv .warn b{color:var(--crimson)}
 @media(max-width:900px){.shopk,.shopv{grid-template-columns:1fr 1fr}.shoph{flex-direction:column}.shoph small{text-align:left}}
+.t-g{color:#1F7A3A!important;font-weight:700}.t-y{color:#B7791F!important;font-weight:700}.t-r{color:var(--crimson)!important;font-weight:700}
+td.t-sos{background:var(--velvet)!important;color:#fff!important;font-weight:900}b.t-sos{display:inline-block;color:#fff!important;background:var(--velvet);padding:2px 12px;border-radius:6px}
 .bods{display:grid;gap:16px}.bod{border:1px solid var(--rule);border-left:4px solid var(--crimson);border-radius:12px;padding:22px 26px;background:var(--white)}
 .bodtop{display:flex;justify-content:space-between;gap:20px 32px;flex-wrap:wrap}.bod h3{font-size:22px;margin:6px 0 4px;color:var(--velvet)}.bod p{margin:0;font-size:14.5px;color:var(--muted)}.bod p b{color:var(--text)}
 .bodcost{text-align:right}.bodcost span{display:block;font-size:12.5px;color:var(--muted);letter-spacing:.04em}.bodcost b{font-family:var(--f-head);font-weight:900;font-size:30px;color:var(--crimson);white-space:nowrap}
@@ -636,8 +638,9 @@ let salesData=null, salesErr="";
 const num=v=>{const t=String(v||"").replace(/[^0-9,-]/g,"").replace(",",".");return t?parseFloat(t):0};
 const vnd=n=>Math.round(n).toLocaleString("vi-VN")+" ₫";
 const sgn=n=>(n<0?"−":"+")+vnd(Math.abs(n));
-const pct=(c,r)=>r?(c/r*100).toFixed(1).replace(".",",")+"%":"–";
-const pc=(c,r)=>!r?"":(c/r>1?"bad":"good");
+const pct=(c,r)=>r?(c/r*100).toFixed(1).replace(".",",")+"%"+(c/r>=1?" · SOS":""):(c?"SOS · chưa có DT":"–");
+/* Thang màu CP/DT: <30% xanh · 30–<50% vàng · 50–<100% đỏ · ≥100% (hoặc có chi phí mà chưa có doanh thu) SOS */
+const pc=(c,r)=>{if(!r)return c?"t-sos":"";const x=c/r;return x<.3?"t-g":x<.5?"t-y":x<1?"t-r":"t-sos"};
 const cl=x=>x?`<td class="n">${vnd(x)}</td>`:`<td class="n z">–</td>`;
 const vndShort=n=>n>=1e6?(n/1e6).toFixed(n>=1e7?1:2).replace(".",",")+" tr":n?Math.round(n/1e3)+"k":"0";
 function parseSales(d){
@@ -663,7 +666,7 @@ function vSales(){
     <div class="crumbs"><a href="#trang-chu">Trang chủ</a> / Doanh số chạy lẻ</div>
     <span class="kicker" style="display:block;margin-top:20px">Chỉ Hào và team Sale · ${salesData?esc(salesData.tab):"Cần mật khẩu"}</span><h1>Doanh số chạy lẻ</h1>
     <p>Chi phí quảng cáo và doanh thu theo ngày, đồng bộ từ file báo cáo của đối tác.</p>
-    ${salesData?`<div class="dstats sk"><div><b>${vnd(salesData.C)}</b><span>Tổng chi phí quảng cáo</span></div><div><b>${vnd(salesData.R)}</b><span>Tổng doanh thu</span></div><div><b class="${pc(salesData.C,salesData.R)}">${pct(salesData.C,salesData.R)}</b><span>Chi phí / doanh thu · dưới 100% là có lãi</span></div></div>`:`<div style="height:40px"></div>`}</section>`;
+    ${salesData?`<div class="dstats sk"><div><b>${vnd(salesData.C)}</b><span>Tổng chi phí quảng cáo</span></div><div><b>${vnd(salesData.R)}</b><span>Tổng doanh thu</span></div><div><b class="${pc(salesData.C,salesData.R)}">${pct(salesData.C,salesData.R)}</b><span>Chi phí / doanh thu</span></div></div>`:`<div style="height:40px"></div>`}</section>`;
   if(!salesData) return head+`<form class="gate" id="gate"><h3>Nhập mật khẩu</h3><p>Trang này chỉ dành cho Hào và team Sale.</p><input id="pw" type="password" autocomplete="current-password" placeholder="Mật khẩu" aria-label="Mật khẩu"><button type="submit">Xem doanh số</button><div class="err">${esc(salesErr)}</div></form>`;
   const P=salesData.prods, C=salesData.C, Rv=salesData.R, dates=P[0].days.map(x=>x.d);
   const cmp=`<div class="blockhead"><h2>So sánh theo brand</h2></div><table class="tasks stable"><thead><tr><th>Brand</th><th class="n">Chi phí</th><th class="n">Doanh thu</th><th class="n">Chênh lệch</th><th class="n">CP / DT</th></tr></thead><tbody>
@@ -675,7 +678,7 @@ function vSales(){
    <tr><th>Ngày</th>${groups.map(g=>`<th class="n gs">Chi phí</th><th class="n">Doanh thu</th><th class="n">CP / DT</th>`).join("")}</tr></thead><tbody>
    ${dates.map((d,i)=>`<tr><td class="ch">${d}</td>${groups.map(g=>{const c=g.c(i),r=g.r(i);return `<td class="n gs${c?"":" z"}">${c?vnd(c):"–"}</td>${cl(r)}<td class="n ${pc(c,r)}">${pct(c,r)}</td>`}).join("")}</tr>`).join("")}
    <tr class="tot"><td>Tổng</td>${groups.map(g=>`<td class="n gs">${vnd(g.tc)}</td><td class="n">${vnd(g.tr)}</td><td class="n ${pc(g.tc,g.tr)}">${pct(g.tc,g.tr)}</td>`).join("")}</tr></tbody></table></div>`;
-  return head+cmp+daily+`<p class="snote">Nguồn: file "${esc(salesData.file)}", tab ${esc(salesData.tab)}. ${SALES_URL?"Số liệu tải mới mỗi lần mở trang.":"Bản xem trước dùng số liệu chụp ngày 12/11/2026."} CP/DT dưới 100% là có lãi trên quảng cáo, trên 100% là chi phí cao hơn doanh thu.</p>`;
+  return head+cmp+daily+`<p class="snote">Nguồn: file "${esc(salesData.file)}", tab ${esc(salesData.tab)}. ${SALES_URL?"Số liệu tải mới mỗi lần mở trang.":"Bản xem trước dùng số liệu chụp ngày 12/11/2026."} Thang màu CP/DT: dưới 30% xanh · 30% đến dưới 50% vàng · 50% đến dưới 100% đỏ · từ 100% trở lên SOS.</p>`;
 }
 document.addEventListener("submit",async e=>{if(e.target.id!=="gate")return;e.preventDefault();await salesLogin($("#pw").value);route()});
 function vSearch(q){
