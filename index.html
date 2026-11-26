@@ -313,6 +313,12 @@ footer .wrap{border-top:1px solid var(--rule);padding-block:28px 40px;font-size:
 .atable td.stxt .upd{display:block;white-space:pre-line}
 .atable td.stxt{font-size:14.5px}.atable tr.late td.due .st{color:var(--crimson)}.atable tr.isdone td{opacity:.65}
 .wtable,.atable{table-layout:fixed}.wtable .c-ch{width:22%}.wtable .c-goal{width:17%}.wtable .c-day{width:8%}.wtable .c-bar{width:17%}.wtable .c-num{width:9%}.wtable .c-note{width:27%}
+.adall{border-left:4px solid #1F7A3A;background:#F1F8F2;border-radius:10px;padding:16px 20px;margin-bottom:16px}.adall .kicker{color:#1F7A3A}.adall p{margin:6px 0 0;font-size:15.5px;line-height:1.55}
+.adc{border:1px solid var(--rule);border-radius:12px;padding:22px 26px;background:var(--white)}
+.adhis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:16px}.adhi{border-radius:10px;padding:14px 16px;background:var(--misty)}.adhi.up{background:#E3F1E4}
+.adhi span{display:block;font-size:12.5px;color:var(--muted)}.adhi b{display:block;font-family:var(--f-head);font-weight:900;font-size:30px;color:var(--crimson);line-height:1.2}.adhi.up b{color:#1F7A3A}.adhi small{display:block;font-size:12.5px;color:var(--text);margin-top:2px}
+.adm{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px 16px;margin-top:16px;padding-top:14px;border-top:1px solid var(--rule)}.adm span{display:block;font-size:12px;color:var(--muted)}.adm b{font-family:var(--f-head);font-weight:800;font-size:18px;color:var(--text);white-space:nowrap}
+.adev{margin:14px 0 0;font-size:14.5px;background:var(--paper);border-radius:8px;padding:12px 14px}.adev b{color:var(--velvet)}
 .shops{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));gap:16px}.shopc{border:1px solid var(--rule);border-radius:12px;padding:22px 26px;background:var(--white)}
 .shoph{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.shoph h3{font-size:24px;color:var(--velvet);margin-top:4px}.shoph small{text-align:right;font-size:12.5px;color:var(--muted)}
 .shopk{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:12px;margin-top:18px;padding-top:16px;border-top:1px solid var(--rule)}.shopk span,.shopv span{display:block;font-size:12.5px;color:var(--muted)}
@@ -370,7 +376,7 @@ i.sos{display:inline-block;font-style:normal;font-size:10.5px;font-weight:800;le
 <header class="top"><div class="wrap">
   <a href="#trang-chu" aria-label="Trang chủ"><svg class="logo" viewBox="0 0 506 214"><use href="#logo"/></svg></a>
   <nav id="nav" aria-label="Điều hướng">
-    <a href="#trang-chu">Tổng quan</a><a href="#ke-hoach">Kế hoạch</a><a href="#bao-cao">Báo cáo tuần</a><a href="#task-phat-sinh">Task phát sinh</a><a href="#task-daily">Task daily</a><a href="#doanh-so">Doanh số 🔒</a><a href="#bao-cao-san">Báo cáo sàn</a>
+    <a href="#trang-chu">Tổng quan</a><a href="#ke-hoach">Kế hoạch</a><a href="#bao-cao">Báo cáo tuần</a><a href="#task-phat-sinh">Task phát sinh</a><a href="#task-daily">Task daily</a><a href="#doanh-so">Doanh số 🔒</a><a href="#bao-cao-tiktok">Báo cáo Tiktok</a>
   </nav>
   <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="q" type="search" placeholder="Tìm task, kênh, người…" aria-label="Tìm kiếm"></label>
 </div></header>
@@ -387,7 +393,7 @@ i.sos{display:inline-block;font-style:normal;font-size:10.5px;font-weight:800;le
    - ADHOC : tab "Task phát sinh"    → việc làm một lần / chạy dài, có hạn
    - DAILY : tab "Task daily"        → việc đăng bài định kỳ, chỉ tiêu theo ngày/tuần
    - LOG   : tab "Nhật ký đăng bài"  → mỗi bài đăng 1 dòng, web tự đếm cho DAILY */
-let SHOP=[], BOD=[], PEOPLE={}, NAMES={}, PLANS=[], ADHOC=[], ADHOC_ALL=[], DAILY=[], LOG=[], CAL={};
+let ADS=[], SHOP=[], BOD=[], PEOPLE={}, NAMES={}, PLANS=[], ADHOC=[], ADHOC_ALL=[], DAILY=[], LOG=[], CAL={};
 let LOADED=false, SOURCE_NOTE="Đang tải dữ liệu…";
 
 /* ===== HELPERS ===== */
@@ -502,6 +508,30 @@ function bodBlock(){
       ${b.note?`<p class="bodnote">Ghi chú BOD: ${esc(b.note)}</p>`:""}</article>`}).join("")}</div>`;
 }
 
+const ADS_FIELDS=[["spend","Chi tiêu","đ"],["imp","Lần hiển thị"],["reach","Phạm vi tiếp cận"],["freq","Tần suất"],["cpm","CPM","đ"],["cpr","Chi phí/1.000 người","đ"],["clicks","Lượt nhấp"],["ctr","CTR","%"],["v2","Lượt xem video 2 giây"],["v6","Lượt xem video 6 giây"],["v100","Lượt xem 100%"],["visit","Lượt truy cập hồ sơ"],["follow","Lượt follow"]];
+function adsBlock(){
+  const f=(n,u)=>n==null?"–":(u==="%"?n.toLocaleString("vi-VN",{maximumFractionDigits:2})+"%":n.toLocaleString("vi-VN",{maximumFractionDigits:2})+(u==="đ"?" ₫":""));
+  if(!ADS.length)return `<p class="snote">Chưa có số liệu ads.</p>`;
+  const last=Math.max(...ADS.map(x=>+x.d)), L=ADS.filter(x=>+x.d===last);
+  const labelOf=k=>(ADS_FIELDS.find(a=>a[0]===k)||[])[1]||k, keyOf=n=>{const a=ADS_FIELDS.find(a=>n&&a[1].toLowerCase()===n.toLowerCase());return a?a[0]:null};
+  const cards=L.map(x=>{const hi=[];
+    const kk=keyOf(x.kpiName);
+    if(kk&&x.kpi&&x.m[kk]!=null){const pc=x.m[kk]/x.kpi, adj=x.kpiSpend&&x.m.spend?x.m[kk]*x.kpiSpend/x.m.spend/x.kpi:null;
+      hi.push(`<div class="adhi up"><span>${esc(labelOf(kk))} so với dự kiến</span><b>${Math.round(pc*100)}%</b><small>Dự kiến ${f(x.kpi)} với ${f(x.kpiSpend,"đ")} · thực tế ${f(x.m[kk])} (≈ x${(pc).toLocaleString("vi-VN",{maximumFractionDigits:1})})${adj?` · quy đổi đúng ${f(x.kpiSpend,"đ")}: ${Math.round(adj*100)}%`:""}</small></div>`)}
+    if(x.m.follow&&x.m.spend)hi.push(`<div class="adhi"><span>Chi phí mỗi follow</span><b>${f(Math.round(x.m.spend/x.m.follow),"đ")}</b><small>${f(x.m.spend,"đ")} ÷ ${f(x.m.follow)} follow</small></div>`);
+    return `<article class="adc"><div class="shoph"><div><span class="kicker">Mục tiêu: ${esc(x.obj)}</span><h3>${esc(x.name)}</h3></div><small>Ngân sách ${f(x.budget,"đ")}/ngày<br>Kỳ ${esc(x.ky)}</small></div>
+      ${hi.length?`<div class="adhis">${hi.join("")}</div>`:""}
+      <div class="adm">${ADS_FIELDS.filter(([k])=>x.m[k]!=null).map(([k,h,u])=>`<div><span>${esc(h)}</span><b>${f(x.m[k],u)}</b></div>`).join("")}</div>
+      ${x.eval?`<p class="adev"><b>Đánh giá:</b> ${esc(x.eval)}</p>`:""}</article>`}).join("");
+  const tot=L.reduce((a,x)=>a+(x.m.spend||0),0);
+  const ov=L.map(x=>x.overall).filter(Boolean);
+  return `<p class="snote">Báo cáo ngày ${fmtD(L[0].d)} · kỳ ${esc(L[0].ky)} · ${L.length} chiến dịch · tổng chi tiêu <b>${f(tot,"đ")}</b></p>${ov.length?`<div class="adall"><span class="kicker">Đánh giá chung</span><p>${ov.map(esc).join("<br>")}</p></div>`:""}<div class="shops">${cards}</div>`;
+}
+function vTiktok(){
+  return band(" / Báo cáo Tiktok","Tiktok Shop · Tiktok Ads","Báo cáo Tiktok","Số liệu sàn và quảng cáo Tiktok, cập nhật hằng ngày.")
+   +`<div class="blockhead"><h2><span class="num">1</span>Báo cáo sàn</h2><span class="wklab">Trung tâm nhà bán hàng</span></div>`+shopBlock().replace(/^<div class="blockhead"><h2>Báo cáo sàn<\/h2>.*?<\/div>/,"")
+   +`<div class="blockhead"><h2><span class="num">2</span>Báo cáo ads phủ</h2><span class="wklab">Trình quản lý quảng cáo Tiktok</span></div>`+adsBlock();
+}
 function shopBlock(){
   const money=n=>n.toLocaleString("vi-VN")+" ₫";
   if(!SHOP.length)return `<div class="blockhead"><h2>Báo cáo sàn</h2></div><p class="snote">Chưa có số liệu sàn.</p>`;
@@ -694,7 +724,7 @@ function vSearch(q){
 }
 
 /* ===== ROUTER ===== */
-const NAV={"ke-hoach":"ke-hoach","bao-cao":"bao-cao","task-phat-sinh":"task-phat-sinh","task-daily":"task-daily","doanh-so":"doanh-so","bao-cao-san":"bao-cao-san"};
+const NAV={"ke-hoach":"ke-hoach","bao-cao":"bao-cao","task-phat-sinh":"task-phat-sinh","task-daily":"task-daily","doanh-so":"doanh-so","bao-cao-san":"bao-cao-tiktok","bao-cao-tiktok":"bao-cao-tiktok"};
 function route(){
   let h=(location.hash||"#trang-chu").slice(1); const q=$("#q").value.trim();
   if(h==="phan-cong"||h==="nhan-su")h="task-phat-sinh";
@@ -706,7 +736,7 @@ function route(){
   else if(h==="task-phat-sinh")html=vAdhoc();
   else if(h==="task-daily")html=vDaily();
   else if(h==="doanh-so")html=vSales();
-  else if(h==="bao-cao-san")html=band(" / Báo cáo sàn","Tiktok Shop · Shopee","Báo cáo sàn","Số liệu sàn cập nhật hằng ngày từ trang quản lý nhà bán hàng.")+shopBlock().replace(/^<div class="blockhead"><h2>Báo cáo sàn<\/h2>.*?<\/div>/,"");
+  else if(h==="bao-cao-san"||h==="bao-cao-tiktok")html=vTiktok();
   else html=vHome();
   $("#view").innerHTML=html;
   document.body.classList.toggle("home",nav==="trang-chu"&&!q);
@@ -749,6 +779,9 @@ async function loadAll(){
     LOG=nk.map(r=>({d:dd(col(r,"Ngày")),who:one(col(r,"Người đăng")),ch:col(r,"Kênh"),links:links(col(r,"Link bài")),n:col(r,"Ghi chú"),row:r._row})).filter(l=>l.d&&l.who);
     try{BOD=(await tab(id,"Cần BOD duyệt",["Nội dung","Trạng thái"])).filter(r=>col(r,"Nội dung")).map(r=>({id:col(r,"Mã"),t:col(r,"Nội dung"),by:col(r,"Người đề xuất"),task:col(r,"Task liên quan"),cost:String(col(r,"Chi phí dự kiến")).trim(),kpi:col(r,"Chỉ số mục tiêu").split(/\n/).map(x=>x.trim()).filter(Boolean).map(x=>x.split(/\s*·\s*/)),lines:col(r,"Chi tiết chi phí").split(/\n/).map(x=>x.trim()).filter(Boolean).map(x=>x.split(/\s*·\s*/)),link:links(col(r,"Link chi tiết"))[0]||"",due:dd(col(r,"Hạn duyệt")),st:col(r,"Trạng thái")||"Chờ duyệt",note:col(r,"Ghi chú BOD")}))}catch(e){BOD=[]}
     try{SHOP=(await tab(id,"Báo cáo sàn",["Ngày báo cáo","GMV"])).map(r=>({d:dd(col(r,"Ngày báo cáo")),san:col(r,"Sàn"),shop:col(r,"Shop"),ky:col(r,"Kỳ số liệu"),upd:col(r,"Sàn cập nhật"),gmv:+String(col(r,"GMV")).replace(/[^0-9]/g,"")||0,kh:col(r,"Khách hàng"),don:col(r,"Đơn hàng SKU"),visit:col(r,"Khách truy cập"),grow:col(r,"Tăng trưởng"),ship:col(r,"Đơn cần vận chuyển"),ret:col(r,"Đơn trả hàng"),rej:col(r,"Sản phẩm bị từ chối"),bad:col(r,"Đánh giá tiêu cực"),n:col(r,"Ghi chú")})).filter(x=>x.d)}catch(e){SHOP=[]}
+    try{const nv=v=>{v=String(v||"").trim();if(!v)return null;const x=+v.replace(/\./g,"").replace(",",".");return isNaN(x)?null:x};
+      ADS=(await tab(id,"Báo cáo ads Tiktok",["Ngày báo cáo","Chiến dịch"])).filter(r=>col(r,"Chiến dịch")).map(r=>{const o={d:dd(col(r,"Ngày báo cáo")),ky:col(r,"Kỳ số liệu"),name:col(r,"Chiến dịch"),obj:col(r,"Mục tiêu tối ưu"),eval:col(r,"Đánh giá"),overall:col(r,"Đánh giá chung"),kpiName:col(r,"KPI chỉ số"),m:{}};
+        ADS_FIELDS.forEach(([k,h])=>o.m[k]=nv(col(r,h)));o.budget=nv(col(r,"Ngân sách"));o.kpi=nv(col(r,"KPI dự kiến"));o.kpiSpend=nv(col(r,"KPI ứng với"));return o}).filter(x=>x.d)}catch(e){ADS=[]}
     CAL=cal; PEOPLE=people; LOADED=true;
     const now=new Date(); SOURCE_NOTE="Dữ liệu cập nhật lúc "+String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0")+" "+fmtD(now)+"/"+now.getFullYear();
   }catch(e){ SOURCE_NOTE="Chưa đọc được Google Sheets ("+e.message+"). Thử tải lại trang."; }
