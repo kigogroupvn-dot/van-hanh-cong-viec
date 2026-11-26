@@ -573,7 +573,7 @@ let aFilter="all", aWho="all";
 function adhocTable(list,showWho=true){
   if(!list.length)return `<p class="empty">Không có task nào.</p>`;
   return `<table class="tasks atable"><thead><tr><th class="c-task">Việc</th>${showWho?`<th class="c-who">Người làm</th>`:""}<th class="c-due">Hạn</th><th class="c-st">Trạng thái · cập nhật</th><th class="c-res">Kết quả</th></tr></thead><tbody>${list.map(t=>`<tr class="${isLate(t)?"late":""}${isOpen(t)?"":" isdone"}">
-    <td><b class="tt">${esc(t.t)}</b>${t.ch||t.brand?`<small>${esc([t.ch,t.brand].filter(Boolean).join(" · "))}</small>`:""}${t.desc?`<small>${esc(t.desc)}</small>`:""}${t.deliver?`<small>Cần nộp: ${esc(t.deliver)}</small>`:""}</td>
+    <td><b class="tt">${esc(t.t)}</b>${t.ch||t.brand?`<small>${esc([t.ch,t.brand].filter(Boolean).join(" · "))}</small>`:""}${t.desc?`<small>${esc(t.desc)}</small>`:""}${t.deliver?`<small>Cần nộp: ${esc(t.deliver)}</small>`:""}${t.plan?`<small><a class="lk" href="${esc(t.plan)}" target="_blank" rel="noopener">Xem plan ↗</a></small>`:""}</td>
     ${showWho?`<td>${t.who.map(k=>PEOPLE[k]?`<a href="#${k}">${esc(nm(k))}</a>`:esc(nm(k))).join(", ")}</td>`:""}
     <td class="due">${dueTag(t)}</td>
     <td class="stxt"><span class="badge b-${t.state}">${{done:"Done",doing:"Doing",huy:"Hủy"}[t.state]}</span>${t.stText?`<span class="upd">${esc(t.stText)}</span>`:(isOpen(t)?`<span class="z upd">Chưa cập nhật tình hình</span>`:"")}${t.n?`<small class="warn">Vướng mắc: ${esc(t.n)}</small>`:""}</td>
@@ -741,7 +741,7 @@ async function loadAll(){
     const cal={};
     await Promise.all(PLANS.filter(p=>p.cal).map(async p=>{try{const rows=await tab(p.cal,"Bài đăng",["Ngày","Link bài đã đăng"]);
       cal[p.id]={who:who(p.poster||p.owner)[0],posts:rows.map(x=>{const d=dd(col(x,"Ngày"));const L=links(col(x,"Link bài đã đăng"));return d&&{d,links:L,done:L.length>0||/đã đăng|đã lên lịch/i.test(col(x,"Tình trạng"))}}).filter(Boolean)}}catch(e){}}));
-    ADHOC_ALL=ps.filter(r=>col(r,"Việc")).map(r=>({id:col(r,"Mã"),t:col(r,"Việc"),desc:col(r,"Mô tả"),ch:col(r,"Kênh"),brand:col(r,"Brand"),who:who(col(r,"Người làm")),dueD:dd(col(r,"Hạn")),deliver:col(r,"Kết quả cần nộp"),stText:col(r,"Cập nhật"),state:(s=>/^done|xong|hoàn/.test(s)?"done":/^h[uủ]y/.test(s)?"huy":"doing")(col(r,"Trạng thái").toLowerCase()),links:links(col(r,"Link kết quả")),n:col(r,"Vướng mắc"),doneAt:dd(col(r,"Ngày xong"))}));
+    ADHOC_ALL=ps.filter(r=>col(r,"Việc")).map(r=>({id:col(r,"Mã"),t:col(r,"Việc"),desc:col(r,"Mô tả"),ch:col(r,"Kênh"),brand:col(r,"Brand"),who:who(col(r,"Người làm")),dueD:dd(col(r,"Hạn")),deliver:col(r,"Kết quả cần nộp"),stText:col(r,"Cập nhật"),state:(s=>/^done|xong|hoàn/.test(s)?"done":/^h[uủ]y/.test(s)?"huy":"doing")(col(r,"Trạng thái").toLowerCase()),links:links(col(r,"Link kết quả")),plan:links(col(r,"Link plan"))[0]||"",n:col(r,"Vướng mắc"),doneAt:dd(col(r,"Ngày xong"))}));
     ADHOC=ADHOC_ALL.filter(t=>!(t.state==="done"&&t.doneAt&&TODAY-t.doneAt>7*DAY));
     DAILY=td.filter(r=>col(r,"Kênh")&&col(r,"Người làm")).map(r=>{const k=who(col(r,"Người làm"))[0],src=col(r,"Nguồn số liệu");
       const cp=/lịch/i.test(src)?(Object.keys(cal).find(id=>cal[id].who===k)||Object.keys(cal)[0]):null;
