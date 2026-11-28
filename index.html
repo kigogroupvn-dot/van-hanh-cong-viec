@@ -519,9 +519,8 @@ function adsBlock(){
     const names=String(x.kpiName||"").split(/\n/).map(t=>t.trim()).filter(Boolean), vals=String(x.kpiRaw||"").split(/\n/).map(t=>nvv(t)), share=x.kpiSpend&&x.m.spend?x.m.spend/x.kpiSpend:null;
     names.forEach((nmK,i)=>{const kk=keyOf(nmK),tg=vals[i];if(!kk||!tg||x.m[kk]==null)return;const a=x.m[kk],pc=a/tg,paced=share?pc/share:null,per=kk==="imp"||kk==="reach"||kk==="v2"||kk==="v6"?1000:1;
       const cPlan=x.kpiSpend?x.kpiSpend/tg*per:null,cAct=x.m.spend?x.m.spend/a*per:null;
-      hi.push(`<div class="adhi ${pc>=1||(paced&&paced>=1)?"up":""}"><span>${esc(labelOf(kk))} · so với KPI ${esc(x.phase||"")}</span><b>${Math.round(pc*100)}%</b>
-        <small>KPI ${f(tg)} · thực tế ${f(a)}${share?` · đã tiêu ${Math.round(share*100)}% ngân sách (${f(x.m.spend,"đ")}/${f(x.kpiSpend,"đ")})`:""}</small>
-        ${paced?`<small><b class="sm">Theo tiến độ chi tiêu: ${Math.round(paced*100)}%</b></small>`:""}
+      hi.push(`<div class="adhi ${pc>=1?"up":""}"><span>${esc(labelOf(kk))} · so với KPI ${esc(x.phase||"")}</span><b>${Math.round(pc*100)}%</b>
+        <small>KPI ${f(tg)} · thực tế ${f(a)} · chi tiêu ${f(x.m.spend,"đ")}</small>
         ${cPlan&&cAct?`<small>Chi phí${per>1?"/1.000 "+esc(labelOf(kk).toLowerCase()):"/1 "+esc(labelOf(kk).replace(/^Lượt /,"").toLowerCase())}: thực tế ${f(Math.round(cAct),"đ")} · plan ${f(Math.round(cPlan),"đ")}${cAct<cPlan?` · rẻ hơn ${Math.round((1-cAct/cPlan)*100)}%`:` · đắt hơn ${Math.round((cAct/cPlan-1)*100)}%`}</small>`:""}</div>`)});
     if(x.m.follow&&x.m.spend&&!names.some(n=>keyOf(n)==="follow"))hi.push(`<div class="adhi"><span>Chi phí mỗi follow</span><b>${f(Math.round(x.m.spend/x.m.follow),"đ")}</b><small>${f(x.m.spend,"đ")} ÷ ${f(x.m.follow)} follow</small></div>`);
     return `<article class="adc"><div class="shoph"><div><span class="kicker">Mục tiêu: ${esc(x.obj)}</span><h3>${esc(x.name)}</h3></div><small>Ngân sách ${f(x.budget,"đ")}/ngày<br>Kỳ ${esc(x.ky)}</small></div>
